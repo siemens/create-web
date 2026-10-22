@@ -105,7 +105,8 @@ Usage: create-siemens-web [OPTION]... [DIRECTORY]
 
 Create a new Siemens web application in JavaScript or TypeScript.
 When running in TTY, the CLI will start in interactive mode.
-DIRECTORY may be a relative or an absolute local path. UNC paths, symbolic link or junction are not supported.
+DIRECTORY may be a relative or an absolute local path. UNC paths are not supported.
+DIRECTORY itself cannot be a symbolic link or junction.
 
 Options:
   -t, --template NAME                   use a specific template
