@@ -1,0 +1,54 @@
+header:
+  license:
+    spdx-id: MIT
+    content: |-
+      Copyright (c) Siemens 2026
+      SPDX-License-Identifier: MIT
+  paths-ignore:
+    - .editorconfig
+    - .env.production
+    - .github/**    
+    - .gitignore
+    - .licenserc.yaml
+    - .prettierignore
+    - AGENTS.md
+    - CHANGELOG.md
+    - CODE_OF_CONDUCT.md
+    - CODEOWNERS
+    - CONTRIBUTING.md
+    - DEVELOPER.md
+    - eslint.config.mjs    
+    - LICENSE
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - prettier.config.mjs
+    - README.md
+    - SECURITY.md
+    - vitest.config.ts
+    - '**/_editorconfig'
+    - '**/_gitignore'
+    - '**/_npmrc'
+    - '**/_prettierignore'
+    - '**/_prettierrc'
+    - '**/.prettierrc'
+    - '**/*.html'
+    - '**/*.json'
+    - '**/*.svg'
+    - '**/*.yml'
+    - '**/assets'
+    - '**/dist'
+    - '**/node_modules'
+    - '**/readme_oss.txt'
+
+  language:
+    TemplateConfig:
+      filenames:
+        - _editorconfig
+        - _gitignore
+        - _npmrc
+        - _prettierignore
+      comment_style_id: Hashtag
+
+dependency:
+  files:
+    - package.json
