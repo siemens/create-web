@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) Siemens 2026
+ * SPDX-License-Identifier: MIT
+ */
+import { inject, Service } from '@angular/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { SiThemeService, ThemeType } from '@siemens/element-ng/theme';
+
+@Service()
+export class SettingsService {
+  private translate = inject(TranslateService);
+  private themeService = inject(SiThemeService);
+  readonly availableLanguages = ['en', 'de'];
+
+  constructor() {
+    this.translate.onLangChange.subscribe(event => this.storeLanguage(event));
+
+    const language = this.loadLanguage() ?? this.translate.getBrowserLang() ?? 'en';
+    this.setLanguage(language);
+
+    this.setTheme(this.loadTheme() ?? 'auto');
+  }
+
+  get language() {
+    return this.translate.currentLang;
+  }
+
+  get theme() {
+    return this.loadTheme() ?? 'auto';
+  }
+
+  setLanguage(language: string) {
+    if (this.availableLanguages.includes(language)) {
+      this.translate.use(language);
+    }
+  }
+
+  setTheme(theme: ThemeType) {
+    this.themeService.applyThemeType(theme);
+    this.storeTheme(theme);
+  }
+
+  private storeLanguage(event: LangChangeEvent) {
+    localStorage.setItem('lang', event.lang);
+  }
+
+  private storeTheme(theme: ThemeType) {
+    localStorage.setItem('theme', theme);
+  }
+
+  private loadLanguage() {
+    return localStorage.getItem('lang');
+  }
+
+  private loadTheme() {
+    return localStorage.getItem('theme') as ThemeType | undefined;
+  }
+}

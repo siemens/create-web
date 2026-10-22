@@ -1,0 +1,40 @@
+{
+  "name": "create-siemens-web",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "create-siemens-web": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "dist",
+    "readme_oss.txt"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "build:dev": "tsdown --sourcemap --no-minify",
+    "lint": "eslint .",
+    "start": "node index.js",
+    "test": "vitest --reporter=verbose --config ../../vitest.config.ts"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siemens/create-web.git",
+    "directory": "packages/create-siemens-web"
+  },
+  "bugs": {
+    "url": "https://github.com/siemens/create-web/issues"
+  },
+  "homepage": "https://github.com/siemens/create-web/tree/main/packages/create-siemens-web#readme",
+  "devDependencies": {
+    "@clack/prompts": "1.8.1",
+    "cross-spawn": "7.0.6",
+    "mri": "1.2.0"
+  }
+}

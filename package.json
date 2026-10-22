@@ -1,0 +1,34 @@
+{
+  "name": "siemens-create-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r --if-present --stream build",
+    "build:create": "pnpm --filter create-siemens-web build",
+    "dev": "pnpm --filter create-siemens-web dev",
+    "download:theme": "pnpm --filter ix-theme-downloader download",
+    "format": "prettier --config prettier.config.mjs --write .",
+    "lint:format": "prettier --config prettier.config.mjs --check .",
+    "lint": "eslint .",
+    "test": "pnpm -r --if-present --stream test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@siemens/prettier-config": "^4.4.2",
+    "eslint": "10.12.0",
+    "eslint-plugin-n": "^18.4.1",
+    "execa": "9.6.1",
+    "ix-theme-downloader": "workspace:*",
+    "prettier": "3.9.9",
+    "tsdown": "0.23.0",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "4.1.11"
+  },
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "pnpm": ">=12.x.x"
+  },
+  "volta": {
+    "node": "22.21.0"
+  }
+}
