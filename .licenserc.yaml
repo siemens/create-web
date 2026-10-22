@@ -7,7 +7,7 @@ header:
   paths-ignore:
     - .editorconfig
     - .env.production
-    - .github/**    
+    - .github/**
     - .gitignore
     - .licenserc.yaml
     - .prettierignore
@@ -17,7 +17,7 @@ header:
     - CODEOWNERS
     - CONTRIBUTING.md
     - DEVELOPER.md
-    - eslint.config.mjs    
+    - eslint.config.mjs
     - LICENSE
     - pnpm-lock.yaml
     - pnpm-workspace.yaml
