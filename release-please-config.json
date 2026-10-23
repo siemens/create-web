@@ -4,6 +4,9 @@
   "packages": {
     "packages/create-siemens-web": {
       "release-type": "node",
+      "versioning": "prerelease",
+      "prerelease": true,
+      "prerelease-type": "rc",
       "changelog-path": "/CHANGELOG.md"
     }
   }
