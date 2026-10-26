@@ -35,7 +35,7 @@ jobs:
       - name: Install corporate theme
         run: pnpm download:theme
         env:
-          CSC_TOKEN: ${{ secrets.CSC_TOKEN }}
+          SIEMENS_NPM_TOKEN: ${{ secrets.SIEMENS_NPM_TOKEN }}
           BRAND_URL: ${{ vars.BRAND_URL }}
           BRAND_VERSION: ${{ vars.BRAND_VERSION }}
 
@@ -144,7 +144,7 @@ jobs:
         env:
           # GitLab serves tarballs through the project-scoped registry route.
           PNPM_CONFIG__AUTH: >-
-            { "https://code.siemens.com/api/v4/projects/732/packages/npm": { "@simpl": { "authToken": "${{ secrets.CSC_TOKEN }}" } } }
+            { "https://code.siemens.com/api/v4/projects/732/packages/npm": { "@simpl": { "authToken": "${{ secrets.SIEMENS_NPM_TOKEN }}" } } }
 
       - name: Build Element Starter
         working-directory: github-pages-source/element-starter

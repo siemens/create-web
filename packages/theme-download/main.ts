@@ -21,7 +21,7 @@ dotenv({
   path: path.join(__dirname, '.env.production'),
 });
 
-const token = process.env.CSC_TOKEN!;
+const token = process.env.SIEMENS_NPM_TOKEN!;
 let pkgUrl = process.env.BRAND_URL!;
 const pkgVersion = process.env.BRAND_VERSION!;
 
@@ -40,7 +40,7 @@ if (!process.env.CI) {
 }
 
 if (!token) {
-  console.error('CSC_TOKEN is required');
+  console.error('SIEMENS_NPM_TOKEN is required');
   process.exit(1);
 }
 
