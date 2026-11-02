@@ -19,8 +19,8 @@ jobs:
       issues: write
       pull-requests: write
     outputs:
-      release_created: ${{ steps.release.outputs['packages/create-siemens-web--release_created'] }}
-      tag_name: ${{ steps.release.outputs['packages/create-siemens-web--tag_name'] }}
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - name: Create release pull request or release
         id: release
