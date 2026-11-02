@@ -64,6 +64,3 @@ jobs:
       - name: Publish create-siemens-web
         working-directory: packages/create-siemens-web
         run: pnpm publish --access public --no-git-checks
-        env:
-          PNPM_CONFIG__AUTH: >-
-            { "https://registry.npmjs.org": { "@": { "authToken": ${{ toJSON(secrets.NPM_TOKEN) }} } } }
