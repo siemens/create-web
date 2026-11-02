@@ -2,12 +2,19 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "include-component-in-tag": false,
   "packages": {
-    "packages/create-siemens-web": {
+    ".": {
       "release-type": "node",
       "versioning": "prerelease",
       "prerelease": true,
       "prerelease-type": "rc",
-      "changelog-path": "/CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "packages/create-siemens-web/package.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
