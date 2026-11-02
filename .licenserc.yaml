@@ -23,6 +23,7 @@ header:
     - pnpm-workspace.yaml
     - prettier.config.mjs
     - README.md
+    - renovate.json5
     - SECURITY.md
     - vitest.config.ts
     - '**/_editorconfig'
