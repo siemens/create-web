@@ -66,7 +66,7 @@ const createTempDir = () => {
   // os.tmpdir() can contain symlinks (e.g. /var -> /private/var on macOS).
   // The CLI resolves the destination against the real CWD, so the fixture
   // directory must use the resolved path to match printed output.
-  return fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'create-siemens-web-'));
+  return fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'create-web-'));
 };
 
 // Helper to create a non-empty directory
@@ -529,7 +529,7 @@ test('overwrites a directory without following child links or deleting .git', ()
 });
 
 test('scaffolds an absolute destination path', () => {
-  const absDir = path.join(fs.realpathSync(os.tmpdir()), `create-siemens-web-abs-${Date.now()}`);
+  const absDir = path.join(fs.realpathSync(os.tmpdir()), `create-web-abs-${Date.now()}`);
   const { stdout } = run([absDir, '--template', 'ix-react-starter', '--no-interactive']);
 
   expect(stdout).toContain(`Scaffolding project in ${absDir}`);
@@ -668,9 +668,9 @@ test('warns about Siemens registry access for element-starter', () => {
   expect(stdout).toContain('requires access to the Siemens GitLab npm registry');
 });
 
-test('return help usage how to use create-siemens-web', () => {
+test('return help usage how to use create-web', () => {
   const { stdout } = run(['--help'], { cwd: genRoot });
-  const message = 'Usage: create-siemens-web [OPTION]... [DIRECTORY]';
+  const message = 'Usage: create-web [OPTION]... [DIRECTORY]';
   expect(stdout).toContain(message);
   expect(stdout).toContain('-i, --immediate / --no-immediate');
   expect(stdout).toContain('--overwrite');
@@ -679,9 +679,9 @@ test('return help usage how to use create-siemens-web', () => {
   expect(stdout).toContain('DIRECTORY itself cannot be a symbolic link or junction.');
 });
 
-test('return help usage how to use create-siemens-web with -h alias', () => {
+test('return help usage how to use create-web with -h alias', () => {
   const { stdout } = run(['-h'], { cwd: genRoot });
-  const message = 'Usage: create-siemens-web [OPTION]... [DIRECTORY]';
+  const message = 'Usage: create-web [OPTION]... [DIRECTORY]';
   expect(stdout).toContain(message);
 });
 

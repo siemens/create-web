@@ -12,13 +12,13 @@ Setting up the development environment:
 
 ```shell
 git clone git@github.com:siemens/create-web.git
-cd create-siemens-web
+cd create-web
 pnpm install
 ```
 
 ## Building
 
-The CLI package `create-siemens-web` is built using [tsdown](https://github.com/sxzz/tsdown).
+The CLI package `@siemens/create-web` is built using [tsdown](https://github.com/sxzz/tsdown).
 
 To build packages use the available pnpm scripts:
 
@@ -26,7 +26,7 @@ To build packages use the available pnpm scripts:
 # Build all packages in the workspace
 pnpm run build
 
-# Build create-siemens-web only
+# Build @siemens/create-web only
 pnpm run build:create
 ```
 
@@ -35,18 +35,18 @@ pnpm run build:create
 During development, you can run the build in watch mode or execute the CLI directly:
 
 ```shell
-# Watch mode for create-siemens-web
+# Watch mode for @siemens/create-web
 pnpm build:create
 
 # Link the local package rather than fetch a registry version
-cd packages/create-siemens-web
+cd packages/create-web
 npm link
 
 # Run the CLI in interactive mode
-npm init siemens-web
+npm init @siemens/web
 
 # Run the CLI with arguments
-npm init siemens-web -- . --template ix-react-starter
+npm init @siemens/web -- . --template ix-react-starter
 ```
 
 ## Linting and formatting
@@ -74,8 +74,8 @@ Run the unit tests using the corresponding pnpm scripts:
 # Run all tests across workspace packages
 pnpm run test
 
-# Run tests specifically for create-siemens-web
-pnpm --filter create-siemens-web test
+# Run tests specifically for @siemens/create-web
+pnpm --filter @siemens/create-web test
 ```
 
 ## Corporate theme downloader

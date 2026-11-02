@@ -101,7 +101,7 @@ const cwd = process.cwd();
 
 // prettier-ignore
 const helpMessage = `\
-Usage: create-siemens-web [OPTION]... [DIRECTORY]
+Usage: create-web [OPTION]... [DIRECTORY]
 
 Create a new Siemens web application in JavaScript or TypeScript.
 When running in TTY, the CLI will start in interactive mode.

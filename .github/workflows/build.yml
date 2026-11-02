@@ -43,7 +43,7 @@ jobs:
 
       - name: Scaffold React Starter
         run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/react-starter
+          pnpm exec packages/create-web/index.js github-pages-source/react-starter
           --no-interactive --template ix-react-starter
 
       - name: Install React Starter dependencies
@@ -56,7 +56,7 @@ jobs:
 
       - name: Scaffold Vue Starter
         run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/vue-starter
+          pnpm exec packages/create-web/index.js github-pages-source/vue-starter
           --no-interactive --template ix-vue-starter
 
       - name: Install Vue Starter dependencies
@@ -69,7 +69,7 @@ jobs:
 
       - name: Scaffold Angular Starter
         run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/angular-starter
+          pnpm exec packages/create-web/index.js github-pages-source/angular-starter
           --no-interactive --template ix-angular-starter
 
       - name: Install Angular Starter dependencies

@@ -1,4 +1,4 @@
-# create-siemens-web
+# @siemens/create-web
 
 A scaffolding CLI for Siemens web applications. Run a single command to generate a ready-to-use project with iX or Element components, theming, and tooling pre-configured.
 
@@ -22,31 +22,31 @@ Without access, `npm install` fails for Element-based projects. The iX starters 
 With NPM:
 
 ```bash
-npm create siemens-web@latest
+npm create @siemens/web@latest
 ```
 
 With Yarn:
 
 ```bash
-yarn create siemens-web
+yarn create @siemens/web
 ```
 
 With PNPM:
 
 ```bash
-pnpm create siemens-web
+pnpm create @siemens/web
 ```
 
 With Bun:
 
 ```bash
-bun create siemens-web
+bunx --package @siemens/create-web create-web
 ```
 
 With Deno:
 
 ```bash
-deno init --npm siemens-web
+deno init --npm @siemens/web
 ```
 
 ## CLI usage
@@ -54,6 +54,6 @@ deno init --npm siemens-web
 Non-interactive runs require an explicit template. If the target directory already contains files, rerun with `--overwrite` to remove them first:
 
 ```bash
-npm create siemens-web@latest my-app -- --template ix-react-starter --no-interactive
-npm create siemens-web@latest my-app -- --template element-starter --overwrite --no-interactive
+npm create @siemens/web@latest my-app -- --template ix-react-starter --no-interactive
+npm create @siemens/web@latest my-app -- --template element-starter --overwrite --no-interactive
 ```

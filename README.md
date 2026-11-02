@@ -22,7 +22,7 @@ Copyright (c) Siemens 2026
 
 MIT, see [LICENSE](LICENSE).
 
-### create-siemens-web
+### @siemens/create-web
 
-The source code in the folder [packages/create-siemens-web/src](./packages/create-siemens-web/src/) is derived from [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
+The source code in the folder [packages/create-web/src](./packages/create-web/src/) is derived from [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
 We changed and adapted the code to our needs. At that point in time it was under _MIT License_ and _VoidZero Inc. and Vite contributors_.

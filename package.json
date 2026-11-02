@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r --if-present --stream build",
-    "build:create": "pnpm --filter create-siemens-web build",
-    "dev": "pnpm --filter create-siemens-web dev",
+    "build:create": "pnpm --filter @siemens/create-web build",
+    "dev": "pnpm --filter @siemens/create-web dev",
     "download:theme": "pnpm --filter ix-theme-downloader download",
     "format": "prettier --config prettier.config.mjs --write .",
     "lint:format": "prettier --config prettier.config.mjs --check .",

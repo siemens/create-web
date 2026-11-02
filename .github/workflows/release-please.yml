@@ -19,8 +19,8 @@ jobs:
       issues: write
       pull-requests: write
     outputs:
-      release_created: ${{ steps.release.outputs['packages/create-siemens-web--release_created'] }}
-      tag_name: ${{ steps.release.outputs['packages/create-siemens-web--tag_name'] }}
+      release_created: ${{ steps.release.outputs['packages/create-web--release_created'] }}
+      tag_name: ${{ steps.release.outputs['packages/create-web--tag_name'] }}
     steps:
       - name: Create release pull request or release
         id: release
@@ -58,8 +58,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Publish create-siemens-web
-        working-directory: packages/create-siemens-web
+      - name: Publish @siemens/create-web
+        working-directory: packages/create-web
         run: pnpm publish --access public --no-git-checks
         env:
           PNPM_CONFIG__AUTH: >-

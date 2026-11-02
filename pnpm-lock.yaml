@@ -222,7 +222,7 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@22.20.1)(vite@8.2.2(@types/node@22.20.1)(esbuild@0.28.2)(tsx@4.23.13))
 
-  packages/create-siemens-web:
+  packages/create-web:
     devDependencies:
       '@clack/prompts':
         specifier: 1.8.1

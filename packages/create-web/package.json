@@ -1,10 +1,10 @@
 {
-  "name": "create-siemens-web",
+  "name": "@siemens/create-web",
   "version": "0.0.1",
   "type": "module",
   "license": "MIT",
   "bin": {
-    "create-siemens-web": "index.js"
+    "create-web": "index.js"
   },
   "files": [
     "index.js",
@@ -26,12 +26,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/siemens/create-web.git",
-    "directory": "packages/create-siemens-web"
+    "directory": "packages/create-web"
   },
   "bugs": {
     "url": "https://github.com/siemens/create-web/issues"
   },
-  "homepage": "https://github.com/siemens/create-web/tree/main/packages/create-siemens-web#readme",
+  "homepage": "https://github.com/siemens/create-web/tree/main/packages/create-web#readme",
   "devDependencies": {
     "@clack/prompts": "1.8.1",
     "cross-spawn": "7.0.6",
