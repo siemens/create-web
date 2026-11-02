@@ -11,3 +11,11 @@ minimumReleaseAge: 2880
 
 minimumReleaseAgeExclude:
   - '@siemens/*'
+
+# These block vulnerable transitive versions still permitted by upstream ranges.
+overrides:
+  follow-redirects@>=1.16.0 <=1.16.1: ^1.16.2
+  minimatch@<11.0.1: ^11.0.1
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+  undici@>=4.0.0 <6.29.1: ^6.29.1
+  vite@>=8.2.0 <=8.2.3: ^8.2.4
