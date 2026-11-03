@@ -11,6 +11,7 @@ import {
   elementList,
 } from '@siemens/element-icons';
 import {
+  SiAccountDetailsComponent,
   SiApplicationHeaderComponent,
   SiHeaderAccountItemComponent,
   SiHeaderActionsDirective,
@@ -29,14 +30,15 @@ import { NavbarVerticalItem, SiNavbarVerticalComponent } from '@siemens/element-
   imports: [
     RouterLink,
     RouterOutlet,
-    SiNavbarVerticalComponent,
-    SiHeaderActionsDirective,
+    SiAccountDetailsComponent,
+    SiApplicationHeaderComponent,
     SiHeaderAccountItemComponent,
+    SiHeaderActionsDirective,
+    SiHeaderBrandDirective,
     SiHeaderDropdownComponent,
     SiHeaderDropdownTriggerDirective,
-    SiApplicationHeaderComponent,
-    SiHeaderBrandDirective,
     SiHeaderLogoDirective,
+    SiNavbarVerticalComponent,
   ],
   templateUrl: './main.html',
   host: {
