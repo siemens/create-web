@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-rc.1](https://github.com/siemens/create-web/compare/v0.1.0-rc...v0.1.0-rc.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* npm publishing ([421efde](https://github.com/siemens/create-web/commit/421efded3136e49e9fe00c66137c3a35f50c5d28))
+
 ## [0.1.0-rc](https://github.com/siemens/create-web/compare/v0.0.2-rc...v0.1.0-rc) (2026-11-03)
 
 
