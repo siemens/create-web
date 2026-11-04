@@ -91,4 +91,26 @@ pnpm run download:theme
 
 We use [Release Please](https://github.com/googleapis/release-please) to automate versioning, changelog generation, and npm publishing based on [Conventional Commits](https://www.conventionalcommits.org/).
 
-When pull requests are merged to `main`, Release Please updates or opens a release PR. Once that release PR is merged, GitHub Actions builds and publishes the package to npm automatically.
+After changes are merged to `main`, the workflow runs. Release Please creates or updates a release PR when it finds releasable Conventional Commits since the previous release. Merging that release PR causes GitHub Actions to build and publish the package to npm automatically.
+
+### Promoting a prerelease to a stable release
+
+The [`release-please-config.json`](release-please-config.json) uses the `prerelease` versioning strategy with `prerelease: true` and `prerelease-type: "rc"` to produce release candidates such as `0.1.0-rc.2`.
+
+To promote a release candidate to stable:
+
+1. Change `prerelease` to `false` in `release-please-config.json` and merge the change to `main`. Keep `versioning: "prerelease"`; the `prerelease` setting controls whether the calculated version has an RC suffix and whether the GitHub release is marked as a prerelease.
+2. Release Please needs a releasable commit since the previous release, such as a `fix:` or `feat:` commit. A config-only `chore` and manually rerunning the workflow do not force a release PR. If the current RC is ready as-is and there are no new releasable commits, add a `Release-As` footer to a commit on `main` for the intended stable version. For example, to promote `0.1.0-rc.2` to `0.1.0`:
+
+   ```text
+   chore(release): promote 0.1.0-rc.2 to stable
+
+   Release-As: 0.1.0
+   ```
+
+   If using a pull request, make sure the final commit message on `main` contains the footer.
+
+3. The workflow runs automatically on pushes to `main`. If a run was missed, use **Actions → Release Please → Run workflow** on `main`; this reruns the normal commit checks.
+4. Review and merge the stable release PR. This creates a new stable tag and GitHub release (for example, `v0.1.0`) and triggers the build and npm publish job. Do not promote the existing RC by only changing its prerelease checkbox in GitHub; that does not update the package version or run this release workflow.
+
+Set `prerelease` back to `true` before merging changes for the next RC cycle; those changes still need to include a releasable commit. See the [Release Please manifest configuration](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md#configfile), [version override guidance](https://github.com/googleapis/release-please#how-do-i-change-the-version-number), and this repository's [release workflow](.github/workflows/release-please.yml) for details.
