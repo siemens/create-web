@@ -5,7 +5,7 @@
     ".": {
       "release-type": "node",
       "versioning": "prerelease",
-      "prerelease": true,
+      "prerelease": false,
       "prerelease-type": "rc",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
