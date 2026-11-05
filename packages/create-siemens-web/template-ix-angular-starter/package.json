@@ -33,9 +33,9 @@
     "@angular/cli": "22.0.7",
     "@angular/compiler-cli": "22.0.6",
     "@playwright/test": "1.64.0",
-    "@vitest/browser-playwright": "4.1.11",
+    "@vitest/browser-playwright": "4.1.12",
     "prettier": "3.8.1",
     "typescript": "6.0.3",
-    "vitest": "4.1.11"
+    "vitest": "4.1.12"
   }
 }
