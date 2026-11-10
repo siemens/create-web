@@ -10,73 +10,75 @@ import type { SpawnOptions } from 'node:child_process';
 import spawn from 'cross-spawn';
 import mri from 'mri';
 import * as prompts from '@clack/prompts';
+import {
+  getTemplateId,
+  prepareTemplateFiles,
+  readScaffoldConfig,
+  type ScaffoldConfig,
+  type TemplatePackage,
+} from './template';
 
 const { red, green, yellow } = createColors();
 
 type ColorFunc = (str: string) => string;
-type Framework = {
-  name: string;
-  display: string;
+type DesignSystem = ScaffoldConfig & {
   color: ColorFunc;
-  variants: FrameworkVariant[];
-};
-type FrameworkVariant = {
-  name: string;
-  display: string;
-  color: ColorFunc;
-  requiresSiemensRegistry?: boolean;
 };
 
-const FRAMEWORKS: Framework[] = [
-  {
-    name: 'angular',
-    display: 'Angular',
-    color: red,
-    variants: [
-      {
-        name: 'element-starter',
-        display: 'Element (Angular)',
-        color: red,
-        requiresSiemensRegistry: true,
-      },
-      {
-        name: 'ix-angular-starter',
-        display: 'iX (Angular)',
-        color: red,
-      },
-    ],
-  },
-  {
-    name: 'react',
-    display: 'React',
-    color: green,
-    variants: [
-      {
-        name: 'ix-react-starter',
-        display: 'iX (React)',
-        color: green,
-      },
-    ],
-  },
-  {
-    name: 'vue',
-    display: 'Vue',
-    color: yellow,
-    variants: [
-      {
-        name: 'ix-vue-starter',
-        display: 'iX (Vue)',
-        color: yellow,
-      },
-    ],
-  },
+const DESIGN_SYSTEMS = [
+  { id: 'element', color: red },
+  { id: 'ix-react', color: green },
+  { id: 'ix-angular', color: red },
+  { id: 'ix-vue', color: yellow },
 ];
 const DEFAULT_TEMPLATE = 'ix-angular-starter';
 
-const TEMPLATES = FRAMEWORKS.map(f => f.variants.map(v => v.name)).reduce(
-  (a, b) => a.concat(b),
-  [],
-);
+const getTemplateDir = (id: string) => {
+  return path.resolve(fileURLToPath(import.meta.url), '../..', `template-${id}`);
+};
+
+/** Builds the CLI catalog from manifest metadata while retaining the terminal palette and order. */
+const getDesignSystems = (): DesignSystem[] => {
+  const templateIds = new Set<string>();
+  return DESIGN_SYSTEMS.map(({ id, color }) => {
+    const templateDir = getTemplateDir(id);
+    if (!fs.existsSync(templateDir)) {
+      throw new Error(`Template "${id}" is not shipped with this version.`);
+    }
+    const config = readScaffoldConfig(templateDir);
+    if (config.id !== id) {
+      throw new Error(
+        `Manifest "${path.join(templateDir, 'scaffold.json')}" must declare ID "${id}".`,
+      );
+    }
+    for (const layout of config.layouts) {
+      const templateId = getTemplateId(config.id, layout.id);
+      if (templateIds.has(templateId)) {
+        throw new Error(`The template catalog declares duplicate template ID "${templateId}".`);
+      }
+      templateIds.add(templateId);
+    }
+    return { ...config, color };
+  });
+};
+
+const designSystemLabel = (designSystem: DesignSystem) => {
+  const suffix = designSystem.requiresSiemensRegistry
+    ? ' (requires Siemens GitLab npm access)'
+    : '';
+  return designSystem.color(designSystem.name + suffix);
+};
+
+const getListOfAllTemplates = (designSystems: DesignSystem[]) => {
+  return designSystems
+    .map(designSystem => {
+      const templates = designSystem.layouts
+        .map(layout => `  - ${getTemplateId(designSystem.id, layout.id)}`)
+        .join('\n');
+      return `${designSystemLabel(designSystem)}\n${templates}`;
+    })
+    .join('\n\n');
+};
 
 const SUPPORTED_PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun', 'deno'];
 const PNPM_WORKSPACE = `allowBuilds:
@@ -99,8 +101,9 @@ const argv = mri<{
 });
 const cwd = process.cwd();
 
-// prettier-ignore
-const helpMessage = `\
+const getHelpMessage = (designSystems: DesignSystem[]) => {
+  // prettier-ignore
+  return `\
 Usage: create-siemens-web [OPTION]... [DIRECTORY]
 
 Create a new Siemens web application in JavaScript or TypeScript.
@@ -116,27 +119,16 @@ Options:
   -h, --help                            display this help message
 
 Available templates:
-${getListOfAllTemplates()}
+${getListOfAllTemplates(designSystems)}
 `;
-
-function getListOfAllTemplates() {
-  return FRAMEWORKS.map(f => {
-    const frameworkName = f.color(f.display || f.name);
-    const variants = f.variants
-      .map(v => {
-        const marker = v.requiresSiemensRegistry ? ' (requires Siemens GitLab npm access)' : '';
-        return `  - ${v.name}${marker}`;
-      })
-      .join('\n');
-    return `${frameworkName}\n${variants}`;
-  }).join('\n\n');
-}
+};
 
 const renameFiles: Record<string, string | undefined> = {
   _gitignore: '.gitignore',
   _editorconfig: '.editorconfig',
   _npmrc: '.npmrc',
   _prettierignore: '.prettierignore',
+  _prettierrc: '.prettierrc',
   '_stylelintrc.yml': '.stylelintrc.yml',
 };
 
@@ -199,7 +191,7 @@ async function init() {
   const argInteractive = argv.interactive;
 
   if (argv.help) {
-    console.log(helpMessage);
+    console.log(getHelpMessage(getDesignSystems()));
     return;
   }
 
@@ -254,66 +246,91 @@ async function init() {
     return fail(targetDirError);
   }
 
-  // 4. Choose a framework and variant
+  // 4. Choose a design system, framework, and template
+  let designSystems: DesignSystem[];
+  try {
+    designSystems = getDesignSystems();
+  } catch (error) {
+    return fail(error instanceof Error ? error.message : String(error));
+  }
+  const templates = designSystems.flatMap(designSystem =>
+    designSystem.layouts.map(layout => getTemplateId(designSystem.id, layout.id)),
+  );
   let template = argTemplate;
-  let hasInvalidArgTemplate = false;
-  if (argTemplate && !TEMPLATES.includes(argTemplate)) {
-    hasInvalidArgTemplate = true;
+  if (argTemplate && !templates.includes(argTemplate)) {
     template = undefined;
     if (!interactive) {
       return fail(
-        `Unknown template "${argTemplate}". Available templates:\n  ${TEMPLATES.join('\n  ')}`,
+        `Unknown template "${argTemplate}". Available templates:\n  ${templates.join('\n  ')}`,
       );
     }
+    prompts.log.warn(`"${argTemplate}" isn't a valid template. Please choose from below:`);
   }
   if (!template) {
     if (interactive) {
-      const framework = await prompts.select({
-        message: hasInvalidArgTemplate
-          ? `"${argTemplate}" isn't a valid template. Please choose from below:`
-          : 'Select a framework:',
-        options: FRAMEWORKS.map(framework => {
-          const frameworkColor = framework.color;
-          return {
-            label: frameworkColor(framework.display || framework.name),
-            value: framework,
-          };
-        }),
-      });
-      if (prompts.isCancel(framework)) return cancel();
-
-      const variant = await prompts.select({
-        message: 'Select a variant:',
-        options: framework.variants.map(variant => ({
-          label: variantLabel(variant),
-          value: variant.name,
+      const designSystem = await prompts.select({
+        message: 'Select design system and framework:',
+        options: designSystems.map(designSystem => ({
+          label: designSystemLabel(designSystem),
+          value: designSystem,
         })),
       });
-      if (prompts.isCancel(variant)) return cancel();
+      if (prompts.isCancel(designSystem)) {
+        return cancel();
+      }
+      // Ignore the overview which is for internal use only
+      const selectedTemplate = await prompts.select({
+        message: 'Select a template:',
+        options: designSystem.layouts
+          .filter(layout => layout.id !== 'overview')
+          .map(layout => ({
+            label: layout.name,
+            hint: layout.description,
+            value: getTemplateId(designSystem.id, layout.id),
+          })),
+      });
+      if (prompts.isCancel(selectedTemplate)) {
+        return cancel();
+      }
 
-      template = variant;
+      template = selectedTemplate;
     } else {
       template = DEFAULT_TEMPLATE;
     }
   }
 
   // 5. Validate the template before touching the destination
-  const templateDir = path.resolve(fileURLToPath(import.meta.url), '../..', `template-${template}`);
+  const selectedDesignSystem = designSystems.find(designSystem =>
+    designSystem.layouts.some(option => getTemplateId(designSystem.id, option.id) === template),
+  );
+  if (!selectedDesignSystem) {
+    return fail(`Template "${template}" is not available in the template manifests.`);
+  }
+  const selectedTemplate = selectedDesignSystem.layouts.find(
+    option => getTemplateId(selectedDesignSystem.id, option.id) === template,
+  )!;
+  const templateDir = getTemplateDir(selectedDesignSystem.id);
   if (!fs.existsSync(templateDir)) {
     return fail(`Template "${template}" is not shipped with this version.`);
   }
 
-  let templatePkg: { name?: string; scripts?: Record<string, string> };
+  let templatePkg: TemplatePackage;
   try {
     templatePkg = JSON.parse(fs.readFileSync(path.join(templateDir, 'package.json'), 'utf-8'));
   } catch {
     return fail(`Template "${template}" has an invalid package.json.`);
   }
 
+  let scaffoldConfig: ScaffoldConfig;
+  try {
+    scaffoldConfig = readScaffoldConfig(templateDir);
+  } catch (error) {
+    return fail(error instanceof Error ? error.message : String(error));
+  }
+
   const runScript = getRunScript(templatePkg);
 
-  const selectedVariant = FRAMEWORKS.flatMap(f => f.variants).find(v => v.name === template);
-  if (selectedVariant?.requiresSiemensRegistry) {
+  if (selectedDesignSystem.requiresSiemensRegistry) {
     prompts.log.warn(
       'This template requires access to the Siemens GitLab npm registry to install "@simpl/brand". Configure your registry credentials before installing, otherwise dependency installation will fail.',
     );
@@ -354,7 +371,13 @@ async function init() {
     }
   }
 
-  const allFiles = walkTemplateDir(templateDir);
+  const files = prepareTemplateFiles({
+    templateDir,
+    layout: selectedTemplate.id,
+    packageName,
+    templatePackage: templatePkg,
+    config: scaffoldConfig,
+  });
 
   // Check again, since the target directory may have changed while prompts were open
   const latestTargetDirError = validateTargetDir(root, argOverwrite);
@@ -369,33 +392,18 @@ async function init() {
   }
   fs.mkdirSync(root, { recursive: true });
 
-  const writeTemplate = (relPath: string, content?: string) => {
+  const writeTemplate = (relPath: string, content: Buffer | string) => {
     const isTopLevel = !relPath.includes(path.sep);
     const basename = path.basename(relPath);
     const renamedBasename = isTopLevel ? (renameFiles[basename] ?? basename) : basename;
     const targetPath = path.join(root, path.dirname(relPath), renamedBasename);
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-    if (content !== undefined) {
-      fs.writeFileSync(targetPath, content, { flag: 'wx' });
-    } else if (basename === 'index.html') {
-      const templateContent = fs.readFileSync(path.join(templateDir, relPath), 'utf-8');
-      const updatedContent = templateContent.replace(
-        /<title>.*?<\/title>/,
-        `<title>${packageName}</title>`,
-      );
-      fs.writeFileSync(targetPath, updatedContent, { flag: 'wx' });
-    } else {
-      fs.copyFileSync(path.join(templateDir, relPath), targetPath, fs.constants.COPYFILE_EXCL);
-    }
+    fs.writeFileSync(targetPath, content, { flag: 'wx' });
   };
 
-  for (const file of allFiles.filter(f => f !== 'package.json')) {
-    writeTemplate(file);
+  for (const { relativePath, content } of files) {
+    writeTemplate(relativePath, content);
   }
-
-  const pkg = { ...templatePkg, name: packageName };
-
-  writeTemplate('package.json', JSON.stringify(pkg, null, 2) + '\n');
 
   applyPackageManagerAdjustments(root, pkgManager);
 
@@ -415,19 +423,6 @@ async function init() {
     doneMessage += `\n  ${getRunCommand(pkgManager, runScript).join(' ')}`;
     prompts.outro(doneMessage);
   }
-}
-
-function walkTemplateDir(dir: string, prefix = ''): string[] {
-  const result: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const relPath = prefix ? path.join(prefix, entry.name) : entry.name;
-    if (entry.isDirectory()) {
-      result.push(...walkTemplateDir(path.join(dir, entry.name), relPath));
-    } else {
-      result.push(relPath);
-    }
-  }
-  return result;
 }
 
 function isValidPackageName(projectName: string) {
@@ -512,11 +507,6 @@ function getRunScript(pkg: { scripts?: Record<string, string> }): string {
   if (pkg.scripts?.start) return 'start';
   prompts.log.warn('The template does not define a "dev" or "start" script.');
   return 'dev';
-}
-
-function variantLabel(variant: FrameworkVariant) {
-  const suffix = variant.requiresSiemensRegistry ? ' (requires Siemens GitLab npm access)' : '';
-  return variant.color((variant.display || variant.name) + suffix);
 }
 
 function getInstallCommand(agent: string) {

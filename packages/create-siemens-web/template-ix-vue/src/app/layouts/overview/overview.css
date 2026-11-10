@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) Siemens 2026
+ * SPDX-License-Identifier: MIT
+ */
+.overview {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+}
+
+.overview > main {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+}
+
+#main-content:focus,
+#main-content:focus-within {
+  outline: var(--theme-color-focus-bdr);
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--theme-color-1);
+  color: var(--theme-color-std-text);
+  padding: 8px 16px;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+.layout-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem;
+  margin-block-start: 1.5rem;
+}
+
+.layout-card {
+  display: block;
+  padding: 1.5rem;
+  color: var(--theme-color-std-text);
+  background: var(--theme-color-1);
+  border: 1px solid var(--theme-color-soft-bdr);
+  border-radius: 0.25rem;
+  text-decoration: none;
+}

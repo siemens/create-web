@@ -1,0 +1,46 @@
+{
+  "id": "ix-react",
+  "name": "ix React",
+  "layouts": [
+    {
+      "id": "blank",
+      "name": "Blank",
+      "description": "A bare-bone project setup without any pages or examples",
+      "scaffold": { "dependencies": [] }
+    },
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "A project setup with sample pages to get started quickly",
+      "scaffold": {
+        "dependencies": [
+          "@siemens/ix-aggrid",
+          "@siemens/ix-echarts",
+          "ag-grid-community",
+          "ag-grid-react",
+          "echarts"
+        ]
+      }
+    },
+    {
+      "id": "overview",
+      "name": "Overview",
+      "description": "A browsable gallery of all available layouts and examples",
+      "scaffold": {
+        "includeLayouts": ["blank", "starter"],
+        "preserveHierarchy": true
+      }
+    }
+  ],
+  "scaffold": {
+    "routesFile": "src/app/app.routes.tsx",
+    "dependencies": [
+      "@siemens/ix",
+      "@siemens/ix-icons",
+      "@siemens/ix-react",
+      "react",
+      "react-dom",
+      "react-router-dom"
+    ]
+  }
+}
