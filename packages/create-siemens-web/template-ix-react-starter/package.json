@@ -17,7 +17,7 @@
     "@siemens/ix-react": "^5.1.0",
     "ag-grid-community": "^33.0.0",
     "ag-grid-react": "^33.0.0",
-    "echarts": "^5",
+    "echarts": "^6.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.17.0"
