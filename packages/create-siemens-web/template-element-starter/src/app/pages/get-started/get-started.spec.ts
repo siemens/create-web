@@ -19,9 +19,9 @@ describe('GetStarted', () => {
       providers: [
         provideRouter([]),
         provideTranslateService({
-          missingTranslationHandler: provideMissingTranslationHandlerForElement(),
-        }),
-      ],
+          missingTranslationHandler: provideMissingTranslationHandlerForElement()
+        })
+      ]
     }).compileComponents();
   });
 

@@ -21,10 +21,10 @@ const tsConfig = {
         'tsconfig.json',
         'tsconfig.app.json',
         'tsconfig.spec.json',
-        'playwright/tsconfig.json',
+        'playwright/tsconfig.json'
       ],
-      tsconfigRootDir: __dirname,
-    },
+      tsconfigRootDir: __dirname
+    }
   },
   rules: {
     '@angular-eslint/component-class-suffix': ['off'],
@@ -33,18 +33,18 @@ const tsConfig = {
       {
         type: 'attribute',
         prefix: 'app',
-        style: 'camelCase',
-      },
+        style: 'camelCase'
+      }
     ],
     '@angular-eslint/component-selector': [
       'error',
       {
         type: 'element',
         prefix: 'app',
-        style: 'kebab-case',
-      },
-    ],
-  },
+        style: 'kebab-case'
+      }
+    ]
+  }
 };
 
 const templateConfig = {
@@ -63,11 +63,11 @@ const templateConfig = {
           'label',
           'outerHTML',
           'title',
-          'si-tab',
-        ],
-      },
-    ],
-  },
+          'si-tab'
+        ]
+      }
+    ]
+  }
 };
 
 export default defineConfig([tsConfig, templateConfig]);

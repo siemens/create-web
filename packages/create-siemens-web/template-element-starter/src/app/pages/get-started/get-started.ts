@@ -9,6 +9,6 @@ import { SiLinkDirective } from '@siemens/element-ng/link';
 @Component({
   selector: 'app-get-started',
   imports: [SiLinkDirective, TranslatePipe],
-  templateUrl: './get-started.html',
+  templateUrl: './get-started.html'
 })
 export class GetStarted {}
