@@ -170,8 +170,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@10.14.0(supports-color@7.2.0))
       '@siemens/prettier-config':
-        specifier: 4.4.2
-        version: 4.4.2(prettier@3.9.10)
+        specifier: 5.0.0
+        version: 5.0.0(prettier@3.9.10)
       eslint:
         specifier: 10.14.0
         version: 10.14.0(supports-color@7.2.0)
@@ -722,8 +722,8 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@siemens/prettier-config@4.4.2':
-    resolution: {integrity: sha512-NefTBLxcTykm7y8+saMWTs2RkHq5UL5/1ThAX90qGA8DV+TbAYtjzQnI4FkBh1D4lAqggPJiX8OTZMsQT9z8VQ==}
+  '@siemens/prettier-config@5.0.0':
+    resolution: {integrity: sha512-DgynnO9uJPBf55X5oX1AipU0Z47mXA1GykQweg89bslvgsMVrtew0c9r2mbY53bY+bKBQboL9mdheckOPwhSaQ==}
     peerDependencies:
       prettier: ^3.0.0
 
@@ -2139,7 +2139,7 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@siemens/prettier-config@4.4.2(prettier@3.9.10)':
+  '@siemens/prettier-config@5.0.0(prettier@3.9.10)':
     dependencies:
       prettier: 3.9.10
 
