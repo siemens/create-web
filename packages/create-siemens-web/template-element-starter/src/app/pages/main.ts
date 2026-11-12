@@ -8,7 +8,7 @@ import {
   elementDashboard,
   elementDocument,
   elementHome,
-  elementList,
+  elementList
 } from '@siemens/element-icons';
 import {
   SiAccountDetailsComponent,
@@ -16,11 +16,11 @@ import {
   SiHeaderAccountItemComponent,
   SiHeaderActionsDirective,
   SiHeaderBrandDirective,
-  SiHeaderLogoDirective,
+  SiHeaderLogoDirective
 } from '@siemens/element-ng/application-header';
 import {
   SiHeaderDropdownComponent,
-  SiHeaderDropdownTriggerDirective,
+  SiHeaderDropdownTriggerDirective
 } from '@siemens/element-ng/header-dropdown';
 import { addIcons } from '@siemens/element-ng/icon';
 import { NavbarVerticalItem, SiNavbarVerticalComponent } from '@siemens/element-ng/navbar-vertical';
@@ -38,19 +38,19 @@ import { NavbarVerticalItem, SiNavbarVerticalComponent } from '@siemens/element-
     SiHeaderDropdownComponent,
     SiHeaderDropdownTriggerDirective,
     SiHeaderLogoDirective,
-    SiNavbarVerticalComponent,
+    SiNavbarVerticalComponent
   ],
   templateUrl: './main.html',
   host: {
-    class: 'has-navbar-fixed-top si-layout-inner',
-  },
+    class: 'has-navbar-fixed-top si-layout-inner'
+  }
 })
 export class Main {
   protected readonly icons = addIcons({
     elementDashboard,
     elementDocument,
     elementHome,
-    elementList,
+    elementList
   });
   protected readonly menuItems: NavbarVerticalItem[] = [
     {
@@ -58,28 +58,28 @@ export class Main {
       label: 'NAV.GET-STARTED',
       id: 'get-started',
       icon: this.icons.elementHome,
-      routerLink: 'get-started',
+      routerLink: 'get-started'
     },
     {
       type: 'router-link',
       label: 'NAV.FORMS',
       id: 'forms',
       icon: this.icons.elementDocument,
-      routerLink: 'forms',
+      routerLink: 'forms'
     },
     {
       type: 'router-link',
       label: 'NAV.CHARTS',
       id: 'charts',
       icon: this.icons.elementDashboard,
-      routerLink: 'charts',
+      routerLink: 'charts'
     },
     {
       type: 'router-link',
       label: 'NAV.GRIDS',
       id: 'grids',
       icon: this.icons.elementList,
-      routerLink: 'grids',
-    },
+      routerLink: 'grids'
+    }
   ];
 }

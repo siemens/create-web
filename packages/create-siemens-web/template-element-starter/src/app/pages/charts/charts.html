@@ -1,7 +1,5 @@
 <div class="si-layout-header">
-  <h2 class="si-layout-title si-layout-top-element">
-    {{ 'CHARTS.HEADING' | translate }}
-  </h2>
+  <h2 class="si-layout-title si-layout-top-element">{{ 'CHARTS.HEADING' | translate }}</h2>
 </div>
 <p>{{ 'CHARTS.PARAGRAPH_1' | translate }}</p>
 <p>{{ 'CHARTS.PARAGRAPH_2' | translate }}</p>
@@ -15,7 +13,7 @@
       [title]="'CHARTS.CHART.TITLE' | translate"
       [xAxis]="{
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
       }"
       [yAxis]="{ type: 'value' }"
       [series]="series()"

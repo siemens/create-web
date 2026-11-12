@@ -19,8 +19,8 @@ export const routes: Routes = [
       { path: 'forms', component: Forms },
       { path: 'get-started', component: GetStarted },
       { path: 'grids', component: Grids },
-      { path: '', redirectTo: 'get-started', pathMatch: 'full' },
-    ],
+      { path: '', redirectTo: 'get-started', pathMatch: 'full' }
+    ]
   },
-  { path: '**', redirectTo: 'main' },
+  { path: '**', redirectTo: 'main' }
 ];
