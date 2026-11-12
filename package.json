@@ -18,7 +18,7 @@
     "@siemens/prettier-config": "4.4.2",
     "eslint": "10.14.0",
     "eslint-plugin-n": "18.5.0",
-    "execa": "9.6.1",
+    "execa": "10.2.1",
     "ix-theme-downloader": "workspace:*",
     "prettier": "3.9.10",
     "tsdown": "0.23.7",
