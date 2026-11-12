@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "2.38.2",
-    "@types/fs-extra": "^11.0.4",
+    "@types/fs-extra": "11.0.4",
     "tsx": "4.23.15"
   }
 }
