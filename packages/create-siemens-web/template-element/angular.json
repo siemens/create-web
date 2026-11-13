@@ -39,7 +39,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["node_modules/"]
             },
-            "styles": ["src/styles.scss"]
+            "styles": ["src/styles.scss", "src/brand.scss"]
           },
           "configurations": {
             "production": {
