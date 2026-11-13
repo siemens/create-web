@@ -5,6 +5,7 @@ header:
       Copyright (c) Siemens 2026
       SPDX-License-Identifier: MIT
   paths-ignore:
+    - .agents/
     - .editorconfig
     - .env.production
     - .github/**
