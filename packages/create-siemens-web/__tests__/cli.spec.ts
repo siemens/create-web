@@ -42,7 +42,8 @@ const designSystems = [
     name: 'ix-vue',
     dependency: '@siemens/ix-vue',
     script: 'dev',
-    layouts: ['starter'],
+    layouts: ['blank', 'starter'],
+    internalLayouts: ['overview'],
   },
 ];
 const templateChoices = [
