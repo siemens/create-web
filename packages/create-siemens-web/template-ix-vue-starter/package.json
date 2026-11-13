@@ -19,7 +19,7 @@
     "ag-grid-vue3": "^33.0.0",
     "echarts": "^5.4.1",
     "vue": "^3.5.0",
-    "vue-router": "^4.4.0"
+    "vue-router": "^5.0.0"
   },
   "devDependencies": {
     "@playwright/test": "1.65.0",
