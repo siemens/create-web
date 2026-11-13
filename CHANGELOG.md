@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/siemens/create-web/compare/v0.1.0-rc.2...v0.1.0) (2026-11-13)
+
+
+### Miscellaneous Chores
+
+* **release:** promote 0.1.0-rc.2 to stable ([8d7b534](https://github.com/siemens/create-web/commit/8d7b53484ed2c015693e972ff7b3c03c33c4b291))
+
 ## [0.1.0-rc.2](https://github.com/siemens/create-web/compare/v0.1.0-rc.1...v0.1.0-rc.2) (2026-11-03)
 
 
