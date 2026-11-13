@@ -3,3 +3,7 @@ CHANGELOG.md
 dist
 tmp
 pnpm-lock.yaml
+
+# Intentionally ignored files
+.agents/skills/gh-stack
+.agents/skills/playwright-cli
