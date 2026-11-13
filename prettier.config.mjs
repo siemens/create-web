@@ -8,8 +8,9 @@ const config = {
   ...baseConfig,
   trailingComma: 'all',
   overrides: [
+    ...(baseConfig.overrides ?? []),
     {
-      files: 'packages/create-siemens-web/template-element-starter/**/*',
+      files: 'packages/create-siemens-web/template-element/**/*',
       options: {
         trailingComma: 'none',
       },

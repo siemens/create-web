@@ -1,0 +1,37 @@
+{
+  "name": "template-ix-react",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@siemens/ix": "^5.1.0",
+    "@siemens/ix-aggrid": "^5.0.1",
+    "@siemens/ix-echarts": "^4.1.0",
+    "@siemens/ix-icons": "^3.4.0",
+    "@siemens/ix-react": "^5.1.0",
+    "ag-grid-community": "^33.0.0",
+    "ag-grid-react": "^33.0.0",
+    "echarts": "^5",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.17.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "@vitest/browser-playwright": "4.1.12",
+    "typescript": "6.0.3",
+    "vite": "8.3.8",
+    "vitest": "4.1.12",
+    "vitest-browser-react": "2.3.0"
+  }
+}
