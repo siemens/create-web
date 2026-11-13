@@ -28,7 +28,7 @@ const designSystems = [
     name: 'ix-react',
     dependency: '@siemens/ix-react',
     script: 'dev',
-    layouts: ['starter'],
+    layouts: ['blank', 'starter'],
   },
   {
     display: 'iX Angular',

@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) Siemens 2026
+ * SPDX-License-Identifier: MIT
+ */
+.mainContent:focus,
+.mainContent:focus-within {
+  outline: var(--theme-color-focus-bdr);
+}
+
+.skipLink {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--theme-color-1);
+  color: var(--theme-color-std-text);
+  padding: 8px 16px;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skipLink:focus {
+  top: 0;
+}
