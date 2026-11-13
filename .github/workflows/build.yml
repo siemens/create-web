@@ -29,7 +29,7 @@ jobs:
       - name: Install Node.js and pnpm
         uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
-          runtime: node@krypton
+          runtime: node@lithium
           cache: true
           install: false
       - run: pnpm run lint:format
@@ -50,6 +50,14 @@ jobs:
         working-directory: github-pages-source/react-starter
         run: pnpm install --ignore-workspace
 
+      - name: Install Chromium for scaffolded template tests
+        working-directory: github-pages-source/react-starter
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test React Starter
+        working-directory: github-pages-source/react-starter
+        run: pnpm --ignore-workspace test
+
       - name: Build React Starter
         working-directory: github-pages-source/react-starter
         run: pnpm --ignore-workspace build --base=/react-starter/
@@ -62,6 +70,14 @@ jobs:
       - name: Install Vue Starter dependencies
         working-directory: github-pages-source/vue-starter
         run: pnpm install --ignore-workspace
+
+      - name: Install Vue Starter Chromium
+        working-directory: github-pages-source/vue-starter
+        run: pnpm exec playwright install chromium
+
+      - name: Test Vue Starter
+        working-directory: github-pages-source/vue-starter
+        run: pnpm --ignore-workspace test
 
       - name: Build Vue Starter
         working-directory: github-pages-source/vue-starter
@@ -76,6 +92,47 @@ jobs:
         working-directory: github-pages-source/angular-starter
         run: pnpm install
 
+      - name: Install Angular Starter Chromium
+        working-directory: github-pages-source/angular-starter
+        run: pnpm exec playwright install chromium
+
+      - name: Test Angular Starter
+        working-directory: github-pages-source/angular-starter
+        run: pnpm test
+
       - name: Build Angular Starter
         working-directory: github-pages-source/angular-starter
         run: pnpm run build --base-href=/angular-starter/
+
+      - name: Scaffold Element Starter
+        run: >-
+          pnpm exec packages/create-siemens-web/index.js github-pages-source/element-starter
+          --no-interactive --template element-starter
+
+      - name: Install Element Starter dependencies
+        working-directory: github-pages-source/element-starter
+        run: pnpm install
+        env:
+          # GitLab serves tarballs through the project-scoped registry route.
+          PNPM_CONFIG__AUTH: >-
+            { "https://code.siemens.com/api/v4/projects/732/packages/npm": { "@simpl": { "authToken": "${{ secrets.SIEMENS_NPM_TOKEN }}" } } }
+
+      - name: Lint Element Starter format
+        working-directory: github-pages-source/element-starter
+        run: pnpm run lint:format
+
+      - name: Lint Element Starter Sass
+        working-directory: github-pages-source/element-starter
+        run: pnpm run lint:sass
+
+      - name: Install Element Starter Chromium
+        working-directory: github-pages-source/element-starter
+        run: pnpm exec playwright install chromium
+
+      - name: Test Element Starter
+        working-directory: github-pages-source/element-starter
+        run: pnpm run test
+
+      - name: Build Element Starter
+        working-directory: github-pages-source/element-starter
+        run: pnpm run build

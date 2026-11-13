@@ -16,9 +16,9 @@ describe('App', () => {
       providers: [
         provideRouter([]),
         provideTranslateService({
-          missingTranslationHandler: provideMissingTranslationHandlerForElement(),
-        }),
-      ],
+          missingTranslationHandler: provideMissingTranslationHandlerForElement()
+        })
+      ]
     }).compileComponents();
   });
 

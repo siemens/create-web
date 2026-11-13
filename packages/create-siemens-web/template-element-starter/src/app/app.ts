@@ -13,8 +13,8 @@ import { SettingsService } from './services/settings.service';
   templateUrl: './app.html',
   styleUrl: './app.scss',
   host: {
-    class: 'si-layout-fixed-height',
-  },
+    class: 'si-layout-fixed-height'
+  }
 })
 export class App {
   readonly settingsService = inject(SettingsService);

@@ -23,7 +23,7 @@ const config: PlaywrightTestConfig = {
      * For example in `await expect(locator).toHaveText();`
      */
     timeout: 5000,
-    toHaveScreenshot: { maxDiffPixels: 0, threshold: 0.075 },
+    toHaveScreenshot: { maxDiffPixels: 0, threshold: 0.075 }
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -39,10 +39,10 @@ const config: PlaywrightTestConfig = {
     [
       'junit',
       {
-        outputFile: `./playwright/results/reports/report-e2e.xml`,
-      },
+        outputFile: `./playwright/results/reports/report-e2e.xml`
+      }
     ],
-    isCI ? ['line'] : ['list'],
+    isCI ? ['line'] : ['list']
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -56,13 +56,13 @@ const config: PlaywrightTestConfig = {
 
     viewport: {
       width: 1000,
-      height: 660,
+      height: 660
     },
 
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
 
-    video: isCI ? 'on-first-retry' : 'retain-on-failure',
+    video: isCI ? 'on-first-retry' : 'retain-on-failure'
   },
 
   /* Configure projects for major browsers, webkit is currently flaky */
@@ -78,17 +78,17 @@ const config: PlaywrightTestConfig = {
             '--disable-low-res-tiling',
             '--disable-oop-rasterization',
             '--disable-composited-antialiasing',
-            '--disable-smooth-scrolling',
-          ],
-        },
-      },
-    },
+            '--disable-smooth-scrolling'
+          ]
+        }
+      }
+    }
   ],
   webServer: {
     command: 'npm run start:prod',
     url: `http://${localAddress}:${port}`,
-    reuseExistingServer: !isCI,
-  },
+    reuseExistingServer: !isCI
+  }
 };
 
 export default config;

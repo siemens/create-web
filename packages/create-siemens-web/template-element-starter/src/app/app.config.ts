@@ -11,7 +11,7 @@ import { provideSiUiState } from '@siemens/element-ng/common';
 import { provideSiDatatableConfig } from '@siemens/element-ng/datatable';
 import {
   provideMissingTranslationHandlerForElement,
-  provideNgxTranslateForElement,
+  provideNgxTranslateForElement
 } from '@siemens/element-translate-ng/ngx-translate';
 
 import { routes } from './app.routes';
@@ -26,8 +26,8 @@ export const appConfig: ApplicationConfig = {
     provideTranslateService({
       fallbackLang: 'en',
       loader: provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' }),
-      missingTranslationHandler: provideMissingTranslationHandlerForElement(),
+      missingTranslationHandler: provideMissingTranslationHandlerForElement()
     }),
-    provideSiUiState(),
-  ],
+    provideSiUiState()
+  ]
 };

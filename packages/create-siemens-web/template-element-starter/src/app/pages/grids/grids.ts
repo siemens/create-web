@@ -6,14 +6,14 @@ import { Component, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   SI_DATATABLE_CONFIG,
-  SiDatatableInteractionDirective,
+  SiDatatableInteractionDirective
 } from '@siemens/element-ng/datatable';
 import { NgxDatatableModule } from '@siemens/ngx-datatable';
 
 @Component({
   selector: 'app-grids',
   imports: [NgxDatatableModule, SiDatatableInteractionDirective, TranslatePipe],
-  templateUrl: './grids.html',
+  templateUrl: './grids.html'
 })
 export class Grids {
   protected readonly tableConfig = SI_DATATABLE_CONFIG;
@@ -31,7 +31,7 @@ export class Grids {
       { id: 6, name: 'Sarah Thompson', department: 'Customer Support', role: 'Support Specialist' },
       { id: 7, name: 'Daniel Martinez', department: 'Operations', role: 'Operations Manager' },
       { id: 8, name: 'Olivia Anderson', department: 'Design', role: 'UI/UX Designer' },
-      { id: 9, name: 'James Taylor', department: 'IT', role: 'System Administrator' },
+      { id: 9, name: 'James Taylor', department: 'IT', role: 'System Administrator' }
     ]);
   }
 }

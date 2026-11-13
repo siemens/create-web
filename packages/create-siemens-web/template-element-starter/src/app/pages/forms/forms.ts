@@ -10,7 +10,7 @@ import {
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -18,7 +18,7 @@ import {
   SiCalendarButtonComponent,
   SiDatepickerDirective,
   SiDateRangeComponent,
-  SiTimepickerComponent,
+  SiTimepickerComponent
 } from '@siemens/element-ng/datepicker';
 import { SiFormFieldsetComponent, SiFormItemComponent } from '@siemens/element-ng/form';
 import { SiHelpButtonComponent } from '@siemens/element-ng/help-button';
@@ -53,9 +53,9 @@ export const is18Years: ValidatorFn = (control: AbstractControl): ValidationErro
     SiPhoneNumberInputComponent,
     SiSelectModule,
     SiTimepickerComponent,
-    TranslatePipe,
+    TranslatePipe
   ],
-  templateUrl: './forms.html',
+  templateUrl: './forms.html'
 })
 export class Forms {
   protected readonly optionsList: SelectOption<string>[] = [
@@ -64,22 +64,22 @@ export class Forms {
       value: 'first',
       icon: 'element-face-happy',
       iconColor: 'status-success',
-      label: 'First class',
+      label: 'First class'
     },
     {
       type: 'option',
       value: 'business',
       icon: 'element-face-neutral',
       iconColor: 'status-warning',
-      label: 'Business',
+      label: 'Business'
     },
     {
       type: 'option',
       value: 'economy',
       icon: 'element-face-unhappy',
       iconColor: 'status-danger',
-      label: 'Economy',
-    },
+      label: 'Economy'
+    }
   ];
 
   protected readonly form = new FormGroup({
@@ -92,6 +92,6 @@ export class Forms {
     arrival: new FormControl<Date | null>(null),
     departure: new FormControl<Date | null>(null),
     serviceClass: new FormControl('first'),
-    fellowPassengers: new FormControl(0, Validators.min(2)),
+    fellowPassengers: new FormControl(0, Validators.min(2))
   });
 }
