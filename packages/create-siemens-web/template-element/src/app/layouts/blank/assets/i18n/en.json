@@ -1,0 +1,16 @@
+{
+  "LANGUAGE": {
+    "EN": "English",
+    "DE": "Deutsch"
+  },
+  "NAV": {
+    "HOME": "Home",
+    "LANGUAGE": "Language",
+    "THEME": "Theme"
+  },
+  "THEME": {
+    "AUTO": "Auto",
+    "DARK": "Dark",
+    "LIGHT": "Light"
+  }
+}
