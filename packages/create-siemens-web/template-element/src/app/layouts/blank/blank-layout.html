@@ -1,0 +1,31 @@
+<si-application-header>
+  <si-header-brand>
+    <a siHeaderLogo routerLink="/" class="d-none d-md-flex"></a>
+    <h1 class="application-name">Siemens Element App</h1>
+  </si-header-brand>
+  <si-header-actions>
+    <button
+      si-header-account-item
+      type="button"
+      name="Jane Smith"
+      aria-label="User account: Jane Smith"
+      [siHeaderDropdownTriggerFor]="account"
+    ></button>
+  </si-header-actions>
+</si-application-header>
+<si-navbar-vertical stateId="navbar-vertical" [items]="menuItems">
+  <div class="si-layout-main-padding si-layout-inner">
+    <router-outlet />
+  </div>
+</si-navbar-vertical>
+
+<ng-template #account>
+  <si-header-dropdown>
+    <si-account-details
+      name="Jane Smith"
+      email="jane.smith&#64;siemens.com"
+      company="Siemens AG"
+      userRole="Admin"
+    />
+  </si-header-dropdown>
+</ng-template>

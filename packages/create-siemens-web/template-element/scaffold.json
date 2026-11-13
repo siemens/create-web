@@ -4,6 +4,19 @@
   "requiresSiemensRegistry": true,
   "layouts": [
     {
+      "id": "blank",
+      "name": "Blank",
+      "description": "A bare-bone project setup without any pages or examples",
+      "scaffold": {
+        "dependencies": [],
+        "angular": {
+          "assets": [
+            { "glob": "**/*", "input": "src/app/layouts/blank/assets", "output": "assets" }
+          ]
+        }
+      }
+    },
+    {
       "id": "starter",
       "name": "Starter",
       "description": "A project setup with sample pages to get started quickly",
@@ -20,6 +33,15 @@
             { "glob": "**/*", "input": "src/app/layouts/starter/assets", "output": "assets" }
           ]
         }
+      }
+    },
+    {
+      "id": "overview",
+      "name": "Overview",
+      "description": "A browsable gallery of all available layouts and examples",
+      "scaffold": {
+        "includeLayouts": ["blank", "starter"],
+        "preserveHierarchy": true
       }
     }
   ],

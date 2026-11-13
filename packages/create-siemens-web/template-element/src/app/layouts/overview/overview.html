@@ -1,0 +1,37 @@
+<si-application-header>
+  <si-header-brand>
+    <a siHeaderLogo routerLink="/" class="d-none d-md-flex"></a>
+    <h1 class="application-name">Siemens Element Templates</h1>
+  </si-header-brand>
+</si-application-header>
+<main class="si-layout-main-padding si-layout-inner">
+  <div class="si-layout-header">
+    <h2 class="si-layout-title si-layout-top-element">Template overview</h2>
+  </div>
+
+  <p>Explore the available Siemens Element layouts.</p>
+  <div class="row g-5">
+    <div class="col-12 col-md-6">
+      <a
+        routerLink="/blank"
+        class="d-block h-100 p-6 border rounded text-decoration-none"
+        aria-labelledby="blank-title"
+        aria-describedby="blank-description"
+      >
+        <h3 id="blank-title">Blank</h3>
+        <p id="blank-description">An application shell with empty main content and no examples.</p>
+      </a>
+    </div>
+    <div class="col-12 col-md-6">
+      <a
+        routerLink="/starter"
+        class="d-block h-100 p-6 border rounded text-decoration-none"
+        aria-labelledby="starter-title"
+        aria-describedby="starter-description"
+      >
+        <h3 id="starter-title">Starter</h3>
+        <p id="starter-description">An application shell with forms, charts, and grids.</p>
+      </a>
+    </div>
+  </div>
+</main>
