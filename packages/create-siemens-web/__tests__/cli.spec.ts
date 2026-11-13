@@ -1105,7 +1105,7 @@ test.each(templateSelections)(
         expect(fs.readFileSync(path.join(genPath(), '.npmrc'), 'utf-8')).toContain(
           '@simpl:registry=https://code.siemens.com/api/v4/projects/732/packages/npm/',
         );
-        expect(build.options.styles).toEqual(['src/styles.scss']);
+        expect(build.options.styles).toEqual(['src/styles.scss', 'src/brand.scss']);
         const styles = fs.readFileSync(path.join(genPath(), 'src/styles.scss'), 'utf-8');
         const assetDirectory =
           layout === 'overview' ? 'src/app/layouts/starter/assets' : 'public/assets';
