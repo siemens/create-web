@@ -35,7 +35,7 @@ const designSystems = [
     name: 'ix-angular',
     dependency: '@siemens/ix-angular',
     script: 'start',
-    layouts: ['starter'],
+    layouts: ['blank', 'starter'],
   },
   {
     display: 'iX Vue',
