@@ -1,0 +1,24 @@
+{
+  "id": "ix-vue",
+  "name": "iX Vue",
+  "layouts": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "A project setup with sample pages to get started quickly",
+      "scaffold": {
+        "dependencies": [
+          "@siemens/ix-aggrid",
+          "@siemens/ix-echarts",
+          "ag-grid-community",
+          "ag-grid-vue3",
+          "echarts"
+        ]
+      }
+    }
+  ],
+  "scaffold": {
+    "routesFile": "src/app/app.routes.ts",
+    "dependencies": ["@siemens/ix", "@siemens/ix-icons", "@siemens/ix-vue", "vue", "vue-router"]
+  }
+}
