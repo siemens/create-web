@@ -1,0 +1,38 @@
+{
+  "id": "ix-angular",
+  "name": "iX Angular",
+  "layouts": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "A project setup with sample pages to get started quickly",
+      "scaffold": {
+        "dependencies": [
+          "@siemens/ix-aggrid",
+          "@siemens/ix-echarts",
+          "ag-grid-angular",
+          "ag-grid-community",
+          "echarts"
+        ]
+      }
+    }
+  ],
+  "scaffold": {
+    "routesFile": "src/app/app.routes.ts",
+    "dependencies": [
+      "@angular/common",
+      "@angular/compiler",
+      "@angular/core",
+      "@angular/forms",
+      "@angular/platform-browser",
+      "@angular/router",
+      "@siemens/ix",
+      "@siemens/ix-angular",
+      "@siemens/ix-icons",
+      "rxjs",
+      "tslib",
+      "zone.js"
+    ],
+    "angular": true
+  }
+}
