@@ -1,0 +1,31 @@
+{
+  "id": "ix-react",
+  "name": "iX React",
+  "layouts": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "A project setup with sample pages to get started quickly",
+      "scaffold": {
+        "dependencies": [
+          "@siemens/ix-aggrid",
+          "@siemens/ix-echarts",
+          "ag-grid-community",
+          "ag-grid-react",
+          "echarts"
+        ]
+      }
+    }
+  ],
+  "scaffold": {
+    "routesFile": "src/app/app.routes.tsx",
+    "dependencies": [
+      "@siemens/ix",
+      "@siemens/ix-icons",
+      "@siemens/ix-react",
+      "react",
+      "react-dom",
+      "react-router-dom"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "element",
+  "name": "Element Angular",
+  "requiresSiemensRegistry": true,
+  "layouts": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "A project setup with sample pages to get started quickly",
+      "scaffold": {
+        "dependencies": [
+          "@siemens/charts-ng",
+          "@siemens/ngx-datatable",
+          "echarts",
+          "flag-icons",
+          "google-libphonenumber"
+        ],
+        "angular": {
+          "assets": [
+            { "glob": "**/*", "input": "src/app/layouts/starter/assets", "output": "assets" }
+          ]
+        }
+      }
+    }
+  ],
+  "scaffold": {
+    "routesFile": "src/app/app.routes.ts",
+    "dependencies": [
+      "@angular/aria",
+      "@angular/cdk",
+      "@angular/common",
+      "@angular/compiler",
+      "@angular/core",
+      "@angular/forms",
+      "@angular/platform-browser",
+      "@angular/router",
+      "@ngx-translate/core",
+      "@ngx-translate/http-loader",
+      "@siemens/element-icons",
+      "@siemens/element-ng",
+      "@siemens/element-theme",
+      "@siemens/element-translate-ng",
+      "@simpl/brand",
+      "rxjs",
+      "tslib"
+    ],
+    "angular": true
+  }
+}
