@@ -53,8 +53,8 @@
     "@siemens/eslint-config-angular": "5.0.0",
     "@siemens/prettier-config": "5.0.0",
     "@siemens/stylelint-config-scss": "5.0.0",
-    "@vitest/browser-playwright": "4.1.12",
-    "@vitest/coverage-v8": "4.1.12",
+    "@vitest/browser-playwright": "5.1.0",
+    "@vitest/coverage-v8": "5.1.0",
     "angular-eslint": "22.6.0",
     "eslint": "10.14.0",
     "eslint-plugin-perfectionist": "5.13.0",
@@ -67,7 +67,7 @@
     "stylelint-scss": "7.4.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
-    "vitest": "4.1.12"
+    "vitest": "5.1.0"
   },
   "prettier": "@siemens/prettier-config"
 }
