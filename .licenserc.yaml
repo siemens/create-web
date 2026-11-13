@@ -19,6 +19,7 @@ header:
     - DEVELOPER.md
     - eslint.config.mjs
     - LICENSE
+    - .npmrc
     - pnpm-lock.yaml
     - pnpm-workspace.yaml
     - prettier.config.mjs
