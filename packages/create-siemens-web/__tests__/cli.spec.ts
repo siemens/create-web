@@ -21,7 +21,7 @@ const designSystems = [
     name: 'element',
     dependency: '@siemens/element-ng',
     script: 'start',
-    layouts: ['starter'],
+    layouts: ['blank', 'starter'],
   },
   {
     display: 'iX React',

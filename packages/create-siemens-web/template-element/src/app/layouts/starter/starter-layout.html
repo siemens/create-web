@@ -27,5 +27,66 @@
       company="Siemens AG"
       userRole="Admin"
     />
+    <div class="dropdown-divider"></div>
+    <button
+      si-header-dropdown-item
+      icon="element-language"
+      type="button"
+      [siHeaderDropdownTriggerFor]="language"
+    >
+      {{ 'NAV.LANGUAGE' | translate }}
+    </button>
+    <button
+      si-header-dropdown-item
+      icon="element-palette"
+      type="button"
+      [siHeaderDropdownTriggerFor]="theme"
+    >
+      {{ 'NAV.THEME' | translate }}
+    </button>
+  </si-header-dropdown>
+</ng-template>
+
+<ng-template #language>
+  <si-header-dropdown>
+    @for (language of languageItems; track language) {
+      <button
+        si-header-dropdown-item
+        type="button"
+        [checked]="settingsService.language() === language.value ? 'check' : ''"
+        (click)="settingsService.setLanguage(language.value)"
+      >
+        {{ language.label | translate }}
+      </button>
+    }
+  </si-header-dropdown>
+</ng-template>
+
+<ng-template #theme>
+  <si-header-dropdown>
+    <button
+      si-header-dropdown-item
+      type="button"
+      [checked]="settingsService.theme() === 'auto' ? 'check' : ''"
+      (click)="switchTheme('auto')"
+    >
+      {{ 'THEME.AUTO' | translate }}
+    </button>
+    <button
+      si-header-dropdown-item
+      type="button"
+      [checked]="settingsService.theme() === 'light' ? 'check' : ''"
+      (click)="switchTheme('light')"
+    >
+      {{ 'THEME.LIGHT' | translate }}
+    </button>
+    <button
+      si-header-dropdown-item
+      type="button"
+      [checked]="settingsService.theme() === 'dark' ? 'check' : ''"
+      (click)="switchTheme('dark')"
+    >
+      {{ 'THEME.DARK' | translate }}
+    </button>
   </si-header-dropdown>
 </ng-template>
