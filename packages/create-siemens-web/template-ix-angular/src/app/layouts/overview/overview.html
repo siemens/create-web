@@ -1,0 +1,36 @@
+<div class="overview">
+  <ix-application-header name="Siemens Industrial Experience Templates" [showMenu]="false">
+    @if (showLogo) {
+      <app-company-logo slot="logo" />
+    }
+    <ix-avatar initials="JD" aria-label="User avatar: JD" />
+  </ix-application-header>
+  <main>
+    <ix-content>
+      <h1>Template overview</h1>
+      <p>Explore the available Siemens Industrial Experience layouts.</p>
+      <div class="layout-cards">
+        <a
+          routerLink="/blank"
+          class="layout-card"
+          aria-labelledby="blank-title"
+          aria-describedby="blank-description"
+        >
+          <h2 id="blank-title">Blank</h2>
+          <p id="blank-description">
+            An application shell with empty main content and no examples.
+          </p>
+        </a>
+        <a
+          routerLink="/starter"
+          class="layout-card"
+          aria-labelledby="starter-title"
+          aria-describedby="starter-description"
+        >
+          <h2 id="starter-title">Starter</h2>
+          <p id="starter-description">An application shell with forms, charts, and grids.</p>
+        </a>
+      </div>
+    </ix-content>
+  </main>
+</div>
