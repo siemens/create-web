@@ -34,6 +34,7 @@
   "homepage": "https://github.com/siemens/create-web/tree/main/packages/create-siemens-web#readme",
   "devDependencies": {
     "@clack/prompts": "1.8.1",
+    "@types/cross-spawn": "6.0.6",
     "cross-spawn": "7.0.6",
     "mri": "1.2.0"
   }

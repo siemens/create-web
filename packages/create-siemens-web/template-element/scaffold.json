@@ -1,7 +1,6 @@
 {
   "id": "element",
   "name": "Element Angular",
-  "requiresSiemensRegistry": true,
   "layouts": [
     {
       "id": "blank",
@@ -62,7 +61,6 @@
       "@siemens/element-ng",
       "@siemens/element-theme",
       "@siemens/element-translate-ng",
-      "@simpl/brand",
       "rxjs",
       "tslib"
     ],

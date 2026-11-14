@@ -16,145 +16,28 @@ permissions:
   id-token: write
 
 jobs:
+  build-starter-templates:
+    uses: ./.github/workflows/build-templates.yml
+    with:
+      themes: '[true]'
+      upload-artifacts: true
+    secrets:
+      SIEMENS_NPM_TOKEN: ${{ secrets.SIEMENS_NPM_TOKEN }}
+
   deploy-starter-templates:
     #    if: ${{ inputs.confirm_deployment == true && github.repository == 'siemens/create-web' }}
+    needs: build-starter-templates
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install Node.js and pnpm
-        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
-
-      - name: Build create-siemens-web
-        run: pnpm build:create
-
-      - name: Install corporate theme
-        run: pnpm download:theme
-        env:
-          SIEMENS_NPM_TOKEN: ${{ secrets.SIEMENS_NPM_TOKEN }}
-          BRAND_URL: ${{ vars.BRAND_URL }}
-          BRAND_VERSION: ${{ vars.BRAND_VERSION }}
-
-      - name: Scaffold React Starter
-        run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/react-starter
-          --no-interactive --template ix-react-starter
-
-      - name: Install React Starter dependencies
-        working-directory: github-pages-source/react-starter
-        run: pnpm install --ignore-workspace
-
-      - name: Build React Starter
-        working-directory: github-pages-source/react-starter
-        run: pnpm --ignore-workspace build --base=/react-starter/
-
-      - name: Add corporate theme to React Starter
-        run: cp -R node_modules/@siemens-ix/corporate-theme github-pages-source/react-starter/dist/theme
-
-      - name: Configure React Starter corporate theme
-        run: >-
-          sed -i 's/data-ix-theme="classic"/data-ix-theme="brand"/'
-          github-pages-source/react-starter/dist/index.html
-
-      - name: Add React Starter corporate theme assets
-        run: >-
-          sed -i 's|</head>|    <link rel="stylesheet" href="/react-starter/theme/dist/css/brand-theme.css">\n    <script type="module" src="/react-starter/theme/dist/index.js"></script>\n  </head>|'
-          github-pages-source/react-starter/dist/index.html
-
-      - name: Prepare React Starter artifact directory
-        run: mkdir -p github-pages/react-starter
-
-      - name: Copy React Starter artifact
-        run: cp -R github-pages-source/react-starter/dist/. github-pages/react-starter/
-
-      - name: Scaffold Vue Starter
-        run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/vue-starter
-          --no-interactive --template ix-vue-starter
-
-      - name: Install Vue Starter dependencies
-        working-directory: github-pages-source/vue-starter
-        run: pnpm install --ignore-workspace
-
-      - name: Build Vue Starter
-        working-directory: github-pages-source/vue-starter
-        run: pnpm --ignore-workspace build --base=/vue-starter/
-
-      - name: Add corporate theme to Vue Starter
-        run: cp -R node_modules/@siemens-ix/corporate-theme github-pages-source/vue-starter/dist/theme
-
-      - name: Configure Vue Starter corporate theme
-        run: >-
-          sed -i 's/data-ix-theme="classic"/data-ix-theme="brand"/'
-          github-pages-source/vue-starter/dist/index.html
-
-      - name: Add Vue Starter corporate theme assets
-        run: >-
-          sed -i 's|</head>|    <link rel="stylesheet" href="/vue-starter/theme/dist/css/brand-theme.css">\n    <script type="module" src="/vue-starter/theme/dist/index.js"></script>\n  </head>|'
-          github-pages-source/vue-starter/dist/index.html
-
-      - name: Prepare Vue Starter artifact directory
-        run: mkdir -p github-pages/vue-starter
-
-      - name: Copy Vue Starter artifact
-        run: cp -R github-pages-source/vue-starter/dist/. github-pages/vue-starter/
-
-      - name: Scaffold Angular Starter
-        run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/angular-starter
-          --no-interactive --template ix-angular-starter
-      - name: Install Angular Starter dependencies
-        working-directory: github-pages-source/angular-starter
-        run: pnpm install
-
-      - name: Build Angular Starter
-        working-directory: github-pages-source/angular-starter
-        run: pnpm run build --base-href=/angular-starter/
-
-      - name: Add corporate theme to Angular Starter
-        run: cp -R node_modules/@siemens-ix/corporate-theme github-pages-source/angular-starter/dist/ix-angular-starter/browser/theme
-
-      - name: Configure Angular Starter corporate theme
-        run: >-
-          sed -i 's/data-ix-theme="classic"/data-ix-theme="brand"/'
-          github-pages-source/angular-starter/dist/ix-angular-starter/browser/index.html
-
-      - name: Add Angular Starter corporate theme assets
-        run: >-
-          sed -i 's|</head>|    <link rel="stylesheet" href="/angular-starter/theme/dist/css/brand-theme.css">\n    <script type="module" src="/angular-starter/theme/dist/index.js"></script>\n  </head>|'
-          github-pages-source/angular-starter/dist/ix-angular-starter/browser/index.html
-
-      - name: Prepare Angular Starter artifact directory
-        run: mkdir -p github-pages/angular-starter
-
-      - name: Copy Angular Starter artifact
-        run: cp -R github-pages-source/angular-starter/dist/ix-angular-starter/browser/. github-pages/angular-starter/
-
-      - name: Scaffold Element Starter
-        run: >-
-          pnpm exec packages/create-siemens-web/index.js github-pages-source/element-starter
-          --no-interactive --template element-starter
-      - name: Install Element Starter dependencies
-        working-directory: github-pages-source/element-starter
-        run: pnpm install
-        env:
-          # GitLab serves tarballs through the project-scoped registry route.
-          PNPM_CONFIG__AUTH: >-
-            { "https://code.siemens.com/api/v4/projects/732/packages/npm": { "@simpl": { "authToken": "${{ secrets.SIEMENS_NPM_TOKEN }}" } } }
-
-      - name: Build Element Starter
-        working-directory: github-pages-source/element-starter
-        run: pnpm build --base-href=/element-starter/
-
-      - name: Prepare Element Starter artifact directory
-        run: mkdir -p github-pages/element-starter
-
-      - name: Copy Element Starter artifact
-        run: cp -R github-pages-source/element-starter/dist/element-starter/browser/. github-pages/element-starter/
+      - name: Download starter sites
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: site-*-siemens
+          merge-multiple: true
+          path: github-pages
 
       - name: Upload GitHub Pages artifact
         if: ${{ github.event_name == 'workflow_dispatch' }}
