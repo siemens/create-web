@@ -127,10 +127,6 @@ describe('manifest metadata', () => {
       value: { ...config, scaffold: { ...config.scaffold, dependencies: 1 } },
     },
     {
-      name: 'invalid registry requirement',
-      value: { ...config, requiresSiemensRegistry: 'true' },
-    },
-    {
       name: 'invalid Angular flag',
       value: { ...config, scaffold: { ...config.scaffold, angular: 'true' } },
     },

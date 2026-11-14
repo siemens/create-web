@@ -1,0 +1,168 @@
+name: Build starter templates
+
+on:
+  workflow_call:
+    inputs:
+      themes:
+        description: JSON array of Siemens theme choices
+        type: string
+        default: '[false, true]'
+      checks:
+        description: Run existing repository and template checks
+        type: boolean
+        default: false
+      upload-artifacts:
+        description: Upload the built sites for deployment
+        type: boolean
+        default: false
+    secrets:
+      SIEMENS_NPM_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Build CLI
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js and pnpm
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          runtime: node@lithium
+          cache: true
+          require-lockfile: true
+
+      - name: Lint
+        if: ${{ inputs.checks }}
+        run: pnpm run lint
+
+      - name: Check formatting
+        if: ${{ inputs.checks }}
+        run: pnpm run lint:format
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test CLI
+        if: ${{ inputs.checks }}
+        run: pnpm --filter create-siemens-web test --watch=false --silent
+
+      - name: Upload CLI
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: create-siemens-web-cli
+          path: packages/create-siemens-web/dist
+          if-no-files-found: error
+          retention-days: 1
+
+  templates:
+    name: ${{ matrix.template.id }} (${{ matrix.siemens-theme && 'Siemens theme' || 'default theme' }})
+    needs: prepare
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        siemens-theme: ${{ fromJSON(inputs.themes) }}
+        template:
+          - id: ix-react-starter
+            directory: react-starter
+            build-args: --base=/react-starter/
+            output: dist
+          - id: ix-vue-starter
+            directory: vue-starter
+            build-args: --base=/vue-starter/
+            output: dist
+          - id: ix-angular-starter
+            directory: angular-starter
+            build-args: --base-href=/angular-starter/
+            output: dist/ix-angular-starter/browser
+          - id: element-starter
+            directory: element-starter
+            build-args: --base-href=/element-starter/
+            output: dist/element-starter/browser
+    defaults:
+      run:
+        working-directory: github-pages-source/${{ matrix.template.directory }}
+    env:
+      TEMPLATE: ${{ matrix.template.id }}
+      PROJECT_DIR: github-pages-source/${{ matrix.template.directory }}
+      SIEMENS_THEME: ${{ matrix.siemens-theme }}
+      BUILD_ARGS: ${{ matrix.template.build-args }}
+      BUILD_OUTPUT: ${{ matrix.template.output }}
+      SITE_DIRECTORY: ${{ matrix.template.directory }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Node.js and pnpm
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          runtime: node@lithium
+          cache: true
+          install: false
+
+      - name: Download CLI
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: create-siemens-web-cli
+          path: packages/create-siemens-web/dist
+
+      - name: Scaffold
+        working-directory: .
+        run: |
+          args=(--template "$TEMPLATE" --no-interactive)
+          if [[ "$SIEMENS_THEME" == "true" ]]; then
+            args+=(--siemens-theme)
+          fi
+          pnpm exec packages/create-siemens-web/index.js "$PROJECT_DIR" "${args[@]}"
+
+      - name: Install dependencies
+        run: pnpm install
+        env:
+          PNPM_CONFIG__AUTH: >-
+            ${{ matrix.siemens-theme && format('
+            {{ "https://code.siemens.com/api/v4/projects/732/packages/npm":
+              {{ "@simpl": {{ "authToken": {0} }} }},
+              "https://code.siemens.com/api/v4/projects/249177/packages/npm":
+              {{ "@siemens-ix": {{ "authToken": {0} }} }}
+            }}', toJSON(secrets.SIEMENS_NPM_TOKEN)) || '{}' }}
+
+      - name: Check template formatting
+        if: ${{ inputs.checks }}
+        run: pnpm run --if-present lint:format
+
+      - name: Lint template Sass
+        if: ${{ inputs.checks }}
+        run: pnpm run --if-present lint:sass
+
+      - name: Install Chromium for template tests
+        if: ${{ inputs.checks && !matrix.siemens-theme }}
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test template
+        if: ${{ inputs.checks && !matrix.siemens-theme }}
+        run: pnpm run test --watch=false
+
+      - name: Build template
+        run: pnpm run build "$BUILD_ARGS"
+
+      - name: Prepare site artifact
+        if: ${{ inputs.upload-artifacts }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/site/$SITE_DIRECTORY"
+          cp -R "$BUILD_OUTPUT/." "$RUNNER_TEMP/site/$SITE_DIRECTORY/"
+
+      - name: Upload site
+        if: ${{ inputs.upload-artifacts }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-${{ matrix.template.directory }}-${{ matrix.siemens-theme && 'siemens' || 'default' }}
+          path: ${{ runner.temp }}/site
+          if-no-files-found: error
