@@ -23,7 +23,6 @@ export type ScaffoldLayout = {
 export type ScaffoldConfig = {
   id: string;
   name: string;
-  requiresSiemensRegistry?: boolean;
   layouts: ScaffoldLayout[];
   scaffold: {
     routesFile: string;
@@ -52,6 +51,32 @@ type AngularWorkspace = {
 
 type TemplateFile = { relativePath: string; content: Buffer | string };
 type OutputPathMapper = (sourcePath: string) => string;
+
+type SiemensTheme = {
+  dependency: string;
+  version: string;
+  registry: string;
+  files: string[];
+  stylesheet?: string;
+};
+
+const siemensThemes: Record<string, SiemensTheme | undefined> = {
+  element: {
+    dependency: '@simpl/brand',
+    version: '4.0.1',
+    registry: 'https://code.siemens.com/api/v4/projects/732/packages/npm/',
+    files: ['src/brand.scss'],
+  },
+  ix: {
+    dependency: '@siemens-ix/corporate-theme',
+    version: '2.0.0',
+    registry: 'https://code.siemens.com/api/v4/packages/npm/',
+    files: [],
+    stylesheet: '@siemens-ix/corporate-theme/dist/css/brand-theme.css',
+  },
+};
+
+export const getSiemensTheme = (designSystem: string) => siemensThemes[designSystem.split('-')[0]];
 
 const appRoot = path.join('src', 'app');
 const layoutRoot = path.join(appRoot, 'layouts');
@@ -115,8 +140,6 @@ export const readScaffoldConfig = (templateDir: string): ScaffoldConfig => {
     config.layouts.length === 0 ||
     typeof config.scaffold?.routesFile !== 'string' ||
     !isStringArray(config.scaffold.dependencies) ||
-    (config.requiresSiemensRegistry !== undefined &&
-      typeof config.requiresSiemensRegistry !== 'boolean') ||
     (config.scaffold.angular !== undefined && typeof config.scaffold.angular !== 'boolean')
   ) {
     throw invalid();
@@ -438,12 +461,14 @@ export const prepareTemplateFiles = ({
   packageName,
   templatePackage,
   config,
+  siemensTheme = false,
 }: {
   templateDir: string;
   layout: string;
   packageName: string;
   templatePackage: TemplatePackage;
   config: ScaffoldConfig;
+  siemensTheme?: boolean;
 }): TemplateFile[] => {
   const layouts = resolveLayouts(config, layout);
   const selectedLayout = layouts.at(-1)!;
@@ -451,7 +476,12 @@ export const prepareTemplateFiles = ({
   const preserveHierarchy = selectedLayout.scaffold.preserveHierarchy === true;
   const layoutIds = new Set(layouts.map(selected => selected.id));
   const settings = config.scaffold;
+  const theme = getSiemensTheme(config.id);
+  const themeFiles = new Set(theme?.files.map(file => path.normalize(file)) ?? []);
   const allFiles = walkTemplateDir(templateDir);
+  if (siemensTheme && theme && !allFiles.includes('_npmrc')) {
+    allFiles.push('_npmrc');
+  }
   const routesFile = path.normalize(settings.routesFile);
   if (!allFiles.includes(routesFile)) {
     throw new Error(
@@ -488,9 +518,14 @@ export const prepareTemplateFiles = ({
   const pkg: TemplatePackage = {
     ...templatePackage,
     name: packageName,
-    dependencies: Object.fromEntries(
-      Object.entries(sourceDependencies).filter(([dependency]) => dependencyNames.has(dependency)),
-    ),
+    dependencies: {
+      ...Object.fromEntries(
+        Object.entries(sourceDependencies).filter(([dependency]) =>
+          dependencyNames.has(dependency),
+        ),
+      ),
+      ...(siemensTheme && theme ? { [theme.dependency]: theme.version } : {}),
+    },
   };
 
   const layoutAssets = preserveHierarchy ? [] : (selectedLayout.scaffold.angular?.assets ?? []);
@@ -513,6 +548,9 @@ export const prepareTemplateFiles = ({
     ) as AngularWorkspace;
     const options = workspace.projects[templateName].architect.build.options;
     const selectedStyles = options.styles.filter(file => includesLayoutFile(file, layoutIds));
+    if (siemensTheme && theme?.stylesheet) {
+      selectedStyles.splice(1, 0, `node_modules/${theme.stylesheet}`);
+    }
     if (!preserveHierarchy) {
       globalStyles = prepareGlobalStyles(
         templateDir,
@@ -548,7 +586,8 @@ export const prepareTemplateFiles = ({
       file =>
         (preserveHierarchy || file !== routesFile) &&
         includesLayoutFile(file, layoutIds) &&
-        !globalStyles?.inlinedFiles.has(file),
+        !globalStyles?.inlinedFiles.has(file) &&
+        (siemensTheme || !theme || (file !== '_npmrc' && !themeFiles.has(file))),
     )
     .map(sourcePath => ({ sourcePath, relativePath: getOutputPath(sourcePath) }));
   const destinations = new Map<string, string>();
@@ -586,6 +625,8 @@ export const prepareTemplateFiles = ({
       content = formatJson(pkg) + '\n';
     } else if (sourcePath === 'angular.json' && angularContent !== undefined) {
       content = angularContent;
+    } else if (sourcePath === '_npmrc' && siemensTheme && theme) {
+      content = `${theme.dependency.split('/')[0]}:registry=${theme.registry}\n`;
     } else {
       content =
         globalStyles?.contents.get(sourcePath) ??
@@ -594,8 +635,32 @@ export const prepareTemplateFiles = ({
     if (!preserveHierarchy && sourceExtensions.has(path.extname(sourcePath))) {
       content = rebaseReferences(content.toString(), sourcePath, relativePath, getOutputPath);
     }
+    if (siemensTheme && config.id === 'element' && sourcePath === path.join('src', 'styles.scss')) {
+      content = content
+        .toString()
+        .replace("@use '@siemens/element-theme/src/theme';", "@use './brand';");
+    }
+    if (
+      siemensTheme &&
+      theme?.stylesheet &&
+      sourcePath === path.join('src', `main${path.extname(routesFile)}`)
+    ) {
+      content = content.toString().replace(/^import /m, `import '${theme.dependency}';\nimport `);
+      if (!settings.angular) {
+        const coreImport = "import '@siemens/ix/dist/siemens-ix/siemens-ix.css';";
+        content = content.replace(coreImport, `${coreImport}\nimport '${theme.stylesheet}';`);
+      }
+    }
     if (path.basename(relativePath) === 'index.html') {
       content = content.toString().replace(/<title>.*?<\/title>/, `<title>${packageName}</title>`);
+      if (theme?.stylesheet) {
+        content = content
+          .replace(/data-ix-theme="[^"]*"/, `data-ix-theme="${siemensTheme ? 'brand' : 'classic'}"`)
+          .replace(
+            /data-ix-color-schema="[^"]*"/,
+            `data-ix-color-schema="${siemensTheme ? 'system' : 'dark'}"`,
+          );
+      }
     }
     return { relativePath, content };
   });

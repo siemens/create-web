@@ -304,6 +304,7 @@ test('creates a project through the complete interactive flow', async () => {
       { prompt: 'Project name:', input: `${projectName}\r` },
       { prompt: 'Select design system and framework:', input: '\r' },
       { prompt: 'Select a template:', input: '\r' },
+      { prompt: 'Apply the Siemens theme?', input: 'n\r' },
     ],
   );
 
@@ -332,6 +333,7 @@ test.each(templateSelections)(
       [
         { prompt: 'Select design system and framework:', input: designSystemInput },
         { prompt: 'Select a template:', input: templateInput },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
     );
     const generatedPkg: TemplatePackage = JSON.parse(
@@ -355,6 +357,7 @@ test('recovers from an invalid template with the new prompt flow', async () => {
     [
       { prompt: 'Select design system and framework:', input: '\x1b[B\r' },
       { prompt: 'Select a template:', input: '\r' },
+      { prompt: 'Apply the Siemens theme?', input: 'n\r' },
     ],
   );
 
@@ -433,6 +436,7 @@ describe('catalog initialization', () => {
             fs.writeFileSync(path.join(templateDir, 'scaffold.json'), '{ invalid JSON');
           },
         },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
       cliPath,
     );
@@ -466,6 +470,7 @@ describe('manifest selection metadata', () => {
       [
         { prompt: 'Select design system and framework:', input: '\x1b[B\r' },
         { prompt: 'Select a template:', input: '\r' },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
       cliPath,
     );
@@ -764,7 +769,7 @@ describe('validation before overwrite', () => {
     {
       name: 'installation',
       directory: 'existing',
-      args: ['--template', 'ix-react-starter'],
+      args: ['--template', 'ix-react-starter', '--siemens-theme'],
       prompt: 'Install with',
     },
   ])(
@@ -831,6 +836,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--overwrite', '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -857,6 +863,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -889,6 +896,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--overwrite', '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -1101,10 +1109,8 @@ test.each(templateSelections)(
       expect(serve.configurations.production.buildTarget).toBe(`${template}:build:production`);
       expect(serve.configurations.development.buildTarget).toBe(`${template}:build:development`);
       if (name === 'element') {
-        expect(stdout).toContain('requires access to the Siemens GitLab npm registry');
-        expect(fs.readFileSync(path.join(genPath(), '.npmrc'), 'utf-8')).toContain(
-          '@simpl:registry=https://code.siemens.com/api/v4/projects/732/packages/npm/',
-        );
+        expect(stdout).not.toContain('requires access to the Siemens GitLab npm registry');
+        expect(fs.existsSync(path.join(genPath(), '.npmrc'))).toBe(false);
         expect(build.options.styles).toEqual(['src/styles.scss']);
         const styles = fs.readFileSync(path.join(genPath(), 'src/styles.scss'), 'utf-8');
         const assetDirectory =
@@ -1204,7 +1210,7 @@ test.each(['--help', '-h'])('%s explains usage and lists available templates', f
   expect(stdout).toContain('-h, --help');
   expect(stdout).toContain('UNC paths are not supported.');
   expect(stdout).toContain('DIRECTORY itself cannot be a symbolic link or junction.');
-  expect(stdout).toContain('Element Angular (requires Siemens GitLab npm access)');
+  expect(stdout).toContain('--siemens-theme');
   for (const { display } of designSystems) {
     expect(stdout).toContain(display);
   }
@@ -1270,7 +1276,10 @@ describe('installation and startup', () => {
       const destination = path.join(genPath(), 'generated');
       const result = await runInteractive(
         [destination, '--template', 'ix-react-starter', '--interactive'],
-        [{ prompt: 'Install with npm and start now?', input: accepted ? 'y\r' : 'n\r' }],
+        [
+          { prompt: 'Apply the Siemens theme?', input: 'n\r' },
+          { prompt: 'Install with npm and start now?', input: accepted ? 'y\r' : 'n\r' },
+        ],
         cliPath,
         fixture.env,
       );
@@ -1294,7 +1303,14 @@ describe('installation and startup', () => {
     const fixture = createPackageManagerFixture('npm');
     const destination = path.join(genPath(), 'generated');
     const result = run(
-      [destination, '--template', 'ix-react-starter', '--interactive', '--no-immediate'],
+      [
+        destination,
+        '--template',
+        'ix-react-starter',
+        '--siemens-theme',
+        '--interactive',
+        '--no-immediate',
+      ],
       { cwd: genRoot, env: fixture.env },
       cliPath,
     );

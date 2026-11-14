@@ -10,6 +10,7 @@ import spawn from 'cross-spawn';
 import mri from 'mri';
 import * as prompts from '@clack/prompts';
 import {
+  getSiemensTheme,
   getTemplateId,
   prepareTemplateFiles,
   readScaffoldConfig,
@@ -54,20 +55,13 @@ const validateDesignSystems = (designSystems: ScaffoldConfig[]) => {
   }
 };
 
-const designSystemLabel = (designSystem: ScaffoldConfig) => {
-  const suffix = designSystem.requiresSiemensRegistry
-    ? ' (requires Siemens GitLab npm access)'
-    : '';
-  return designSystem.name + suffix;
-};
-
 const getListOfAllTemplates = (designSystems: ScaffoldConfig[]) => {
   return designSystems
     .map(designSystem => {
       const templates = designSystem.layouts
         .map(layout => `  - ${getTemplateId(designSystem.id, layout.id)}`)
         .join('\n');
-      return `${designSystemLabel(designSystem)}\n${templates}`;
+      return `${designSystem.name}\n${templates}`;
     })
     .join('\n\n');
 };
@@ -86,8 +80,9 @@ const argv = mri<{
   overwrite?: boolean;
   immediate?: boolean;
   interactive?: boolean;
+  'siemens-theme'?: boolean;
 }>(process.argv.slice(2), {
-  boolean: ['help', 'overwrite', 'immediate', 'interactive'],
+  boolean: ['help', 'overwrite', 'immediate', 'interactive', 'siemens-theme'],
   alias: { h: 'help', t: 'template', i: 'immediate' },
   string: ['template'],
 });
@@ -108,6 +103,7 @@ Options:
   -i, --immediate / --no-immediate      install dependencies and start dev
   --overwrite                           remove existing files when target directory is not empty
   --interactive / --no-interactive      force interactive / non-interactive mode
+  --siemens-theme                       apply the Siemens theme (default: no)
   -h, --help                            display this help message
 
 Available templates:
@@ -260,7 +256,7 @@ async function init() {
       const designSystem = await prompts.select({
         message: 'Select design system and framework:',
         options: designSystems.map(designSystem => ({
-          label: designSystemLabel(designSystem),
+          label: designSystem.name,
           value: designSystem,
         })),
       });
@@ -312,12 +308,6 @@ async function init() {
 
   const runScript = getRunScript(templatePkg);
 
-  if (selectedDesignSystem.requiresSiemensRegistry) {
-    prompts.log.warn(
-      'This template requires access to the Siemens GitLab npm registry to install "@simpl/brand". Configure your registry credentials before installing, otherwise dependency installation will fail.',
-    );
-  }
-
   // 6. Get package name
   let packageName = path.basename(root);
   if (!isValidPackageName(packageName)) {
@@ -339,7 +329,26 @@ async function init() {
     }
   }
 
-  // 7. Ask about immediate install
+  // 7. Choose whether to apply the Siemens theme
+  let siemensTheme = argv['siemens-theme'] ?? false;
+  if (interactive && !siemensTheme) {
+    const themeResult = await prompts.confirm({
+      message: 'Apply the Siemens theme?',
+      initialValue: false,
+    });
+    if (prompts.isCancel(themeResult)) {
+      return cancel();
+    }
+    siemensTheme = themeResult;
+  }
+  const theme = getSiemensTheme(selectedDesignSystem.id);
+  if (siemensTheme && theme) {
+    prompts.log.warn(
+      `The Siemens theme requires access to the Siemens GitLab npm registry to install "${theme.dependency}". Configure your registry credentials before installing, otherwise dependency installation will fail.`,
+    );
+  }
+
+  // 8. Ask about immediate install
   let immediate = argImmediate;
   if (immediate === undefined) {
     if (interactive) {
@@ -359,6 +368,7 @@ async function init() {
     packageName,
     templatePackage: templatePkg,
     config: selectedDesignSystem,
+    siemensTheme,
   });
 
   // Check again, since the target directory may have changed while prompts were open
@@ -367,7 +377,7 @@ async function init() {
     return fail(latestTargetDirError);
   }
 
-  // 8. Commit: delete first only after everything was validated
+  // 9. Commit: delete first only after everything was validated
   prompts.log.step(`Scaffolding project in ${root}...`);
   if (argOverwrite) {
     emptyDir(root);

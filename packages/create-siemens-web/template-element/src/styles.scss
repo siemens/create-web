@@ -4,7 +4,7 @@
 // Load Element icons
 @use '@siemens/element-icons/dist/style/siemens-element-icons';
 // Use Element Theme
-@use './brand';
+@use '@siemens/element-theme/src/theme';
 // Use Element components
 @use '@siemens/element-ng/element-ng';
 @use './app/layouts/starter/styles';

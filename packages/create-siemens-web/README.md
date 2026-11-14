@@ -4,19 +4,6 @@ A scaffolding CLI for Siemens web applications. Run a single command to generate
 
 > Based on [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite).
 
-## Prerequisites
-
-Most templates depend only on public packages. All **Element** templates depend on `@simpl/brand`, which is only available from the Siemens GitLab npm registry. To use them you need:
-
-- Access to the [Siemens GitLab npm registry](https://code.siemens.com) for the `@simpl` scope
-- Your registry credentials configured, for example through an `.npmrc` entry such as:
-
-```ini
-//code.siemens.com/api/v4/projects/732/packages/npm/:_authToken=${SIEMENS_NPM_TOKEN}
-```
-
-Without access, `npm install` fails for Element-based projects. The iX templates do not require this registry.
-
 ## Scaffolding Siemens web applications
 
 With NPM:
@@ -51,9 +38,10 @@ deno init --npm siemens-web
 
 ## CLI usage
 
-Use `--template` to skip both selection prompts. Non-interactive runs default to `ix-angular-starter` when no template is supplied. If the target directory already contains files, rerun with `--overwrite` to remove them first:
+Use `--template` to skip the design system and layout prompts. Interactive runs ask whether to apply the Siemens theme, defaulting to No. Use `--siemens-theme` to enable it without that prompt. Non-interactive runs default to `ix-angular-starter` without Siemens theming when no options are supplied. If the target directory already contains files, rerun with `--overwrite` to remove them first:
 
 ```bash
 npm create siemens-web@latest my-app -- --template ix-react-starter --no-interactive
 npm create siemens-web@latest my-app -- --template element-starter --overwrite --no-interactive
+npm create siemens-web@latest my-app -- --template ix-angular-starter --siemens-theme --no-interactive
 ```
