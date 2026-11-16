@@ -15,8 +15,8 @@
     "@siemens/ix-echarts": "^4.1.0",
     "@siemens/ix-icons": "^3.4.0",
     "@siemens/ix-vue": "^5.1.0",
-    "ag-grid-community": "^33.0.0",
-    "ag-grid-vue3": "^33.0.0",
+    "ag-grid-community": "^36.0.0",
+    "ag-grid-vue3": "^36.0.0",
     "echarts": "^5.4.1",
     "vue": "^3.5.0",
     "vue-router": "^4.4.0"
