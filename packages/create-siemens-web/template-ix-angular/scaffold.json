@@ -1,6 +1,7 @@
 {
   "id": "ix-angular",
   "name": "iX Angular",
+  "framework": "angular",
   "layouts": [
     {
       "id": "blank",

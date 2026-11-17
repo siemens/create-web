@@ -1,6 +1,7 @@
 {
   "id": "element",
   "name": "Element Angular",
+  "framework": "angular",
   "layouts": [
     {
       "id": "blank",

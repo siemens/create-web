@@ -23,6 +23,7 @@ export type ScaffoldLayout = {
 export type ScaffoldConfig = {
   id: string;
   name: string;
+  framework: 'angular' | 'react' | 'vue';
   layouts: ScaffoldLayout[];
   scaffold: {
     routesFile: string;
@@ -138,6 +139,7 @@ export const readScaffoldConfig = (templateDir: string): ScaffoldConfig => {
   if (
     typeof config?.id !== 'string' ||
     typeof config.name !== 'string' ||
+    !['angular', 'react', 'vue'].includes(config.framework) ||
     !Array.isArray(config.layouts) ||
     config.layouts.length === 0 ||
     typeof config.scaffold?.routesFile !== 'string' ||
