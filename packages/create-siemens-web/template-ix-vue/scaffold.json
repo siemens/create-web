@@ -1,6 +1,7 @@
 {
   "id": "ix-vue",
   "name": "iX Vue",
+  "framework": "vue",
   "layouts": [
     {
       "id": "blank",

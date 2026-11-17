@@ -66,6 +66,45 @@ const getListOfAllTemplates = (designSystems: ScaffoldConfig[]) => {
     .join('\n\n');
 };
 
+const printTemplates = (designSystems: ScaffoldConfig[], json: boolean) => {
+  const templates = designSystems.flatMap(designSystem =>
+    designSystem.layouts.map(layout => ({
+      template: getTemplateId(designSystem.id, layout.id),
+      name: layout.name,
+      designSystemId: designSystem.id,
+      description: layout.description,
+      framework: designSystem.framework,
+    })),
+  );
+
+  if (json) {
+    console.log(JSON.stringify(templates, undefined, 2));
+    return;
+  }
+
+  const rows = [
+    ['Template', 'Name', 'Framework', 'Description'],
+    ...templates.map(template => [
+      template.template,
+      template.name,
+      template.framework,
+      template.description,
+    ]),
+  ];
+  const widths = rows[0].map((_, column) => Math.max(...rows.map(row => row[column].length)));
+  console.log(
+    rows
+      .map(row =>
+        row
+          .map((value, column) =>
+            column === row.length - 1 ? value : value.padEnd(widths[column]),
+          )
+          .join('  '),
+      )
+      .join('\n'),
+  );
+};
+
 const SUPPORTED_PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun', 'deno'];
 const PNPM_WORKSPACE = `allowBuilds:
   '@parcel/watcher': true
@@ -80,9 +119,19 @@ const argv = mri<{
   overwrite?: boolean;
   immediate?: boolean;
   interactive?: boolean;
+  'list-templates'?: boolean;
+  json?: boolean;
   'siemens-theme'?: boolean;
 }>(process.argv.slice(2), {
-  boolean: ['help', 'overwrite', 'immediate', 'interactive', 'siemens-theme'],
+  boolean: [
+    'help',
+    'overwrite',
+    'immediate',
+    'interactive',
+    'list-templates',
+    'json',
+    'siemens-theme',
+  ],
   alias: { h: 'help', t: 'template', i: 'immediate' },
   string: ['template'],
 });
@@ -92,6 +141,7 @@ const getHelpMessage = (designSystems: ScaffoldConfig[]) => {
   // prettier-ignore
   return `\
 Usage: create-siemens-web [OPTION]... [DIRECTORY]
+       create-siemens-web --list-templates [--json]
 
 Create a new Siemens web application in JavaScript or TypeScript.
 When running in TTY, the CLI will start in interactive mode.
@@ -99,6 +149,8 @@ DIRECTORY may be a relative or an absolute local path. UNC paths are not support
 DIRECTORY itself cannot be a symbolic link or junction.
 
 Options:
+  --list-templates                     list all templates without creating a project
+  --json                               output --list-templates as JSON
   -t, --template NAME                   use a specific template
   -i, --immediate / --no-immediate      install dependencies and start dev
   --overwrite                           remove existing files when target directory is not empty
@@ -185,6 +237,15 @@ async function init() {
   if (argv.help) {
     console.log(getHelpMessage(designSystems));
     return;
+  }
+
+  if (argv['list-templates']) {
+    printTemplates(designSystems, argv.json ?? false);
+    return;
+  }
+
+  if (argv.json) {
+    throw new Error('--json can only be used with --list-templates.');
   }
 
   const interactive = argInteractive ?? process.stdin.isTTY;

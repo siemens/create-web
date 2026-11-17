@@ -45,3 +45,14 @@ npm create siemens-web@latest my-app -- --template ix-react-starter --no-interac
 npm create siemens-web@latest my-app -- --template element-starter --overwrite --no-interactive
 npm create siemens-web@latest my-app -- --template ix-angular-starter --siemens-theme --no-interactive
 ```
+
+### Listing templates
+
+Use `--list-templates` to list all templates, including overview layouts, without creating a project. Add `--json` for machine-readable output:
+
+```bash
+npm create siemens-web@latest -- --list-templates
+npm --silent create siemens-web@latest -- --list-templates --json
+```
+
+**Note:** npm prints a command banner to stdout before launching the CLI. Pass npm's [`--silent` option](https://docs.npmjs.com/cli/v11/using-npm/logging#aliases) before `--` to keep redirected JSON valid:

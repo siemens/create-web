@@ -12,6 +12,7 @@ import { prepareTemplateFiles, readScaffoldConfig, type ScaffoldConfig } from '.
 const config: ScaffoldConfig = {
   id: 'fixture',
   name: 'Fixture',
+  framework: 'angular',
   layouts: [
     {
       id: 'blank',
@@ -117,6 +118,25 @@ afterEach(() => {
 });
 
 describe('manifest metadata', () => {
+  test.each(['angular', 'react', 'vue'])('reads the %s framework from the manifest', framework => {
+    writeFile('scaffold.json', JSON.stringify({ ...config, framework }));
+    expect(readScaffoldConfig(templateDir).framework).toBe(framework);
+  });
+
+  test.each([
+    { framework: undefined },
+    { framework: '' },
+    { framework: 'svelte' },
+    { framework: 'Angular' },
+    { framework: 1 },
+    { framework: true },
+    { framework: [] },
+    { framework: {} },
+  ])('rejects invalid framework metadata ($framework)', ({ framework }) => {
+    writeFile('scaffold.json', JSON.stringify({ ...config, framework }));
+    expect(() => readScaffoldConfig(templateDir)).toThrow('invalid scaffold.json');
+  });
+
   test.each([
     {
       name: 'missing layout metadata',
