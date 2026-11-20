@@ -80,7 +80,7 @@ pnpm --filter create-siemens-web test
 
 ## Corporate theme downloader
 
-The repository includes `ix-theme-downloader` (`packages/theme-download`) to download and unpack corporate theme assets for deployment previews in CI:
+The repository includes `ix-theme-downloader` (`packages/theme-download`) as a standalone utility to download and unpack corporate theme assets in CI:
 
 ```shell
 # Download and unpack corporate theme (requires SIEMENS_NPM_TOKEN and BRAND_URL)

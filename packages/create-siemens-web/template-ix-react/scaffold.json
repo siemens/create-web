@@ -1,6 +1,7 @@
 {
   "id": "ix-react",
   "name": "iX React",
+  "framework": "react",
   "layouts": [
     {
       "id": "blank",
