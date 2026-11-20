@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/siemens/create-web/compare/v0.1.0...v0.1.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* provide missing templates ([6f83d63](https://github.com/siemens/create-web/commit/6f83d630650624870ea8a87ece739ad8c19a14fc))
+
 ## [0.1.0](https://github.com/siemens/create-web/compare/v0.0.2-rc...v0.1.0) (2026-11-20)
 
 ### Features
