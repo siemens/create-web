@@ -19,6 +19,7 @@ const designSystems = [
   {
     display: 'Element Angular',
     name: 'element',
+    framework: 'angular',
     dependency: '@siemens/element-ng',
     script: 'start',
     layouts: ['blank', 'starter'],
@@ -26,6 +27,7 @@ const designSystems = [
   {
     display: 'iX React',
     name: 'ix-react',
+    framework: 'react',
     dependency: '@siemens/ix-react',
     script: 'dev',
     layouts: ['blank', 'starter'],
@@ -33,6 +35,7 @@ const designSystems = [
   {
     display: 'iX Angular',
     name: 'ix-angular',
+    framework: 'angular',
     dependency: '@siemens/ix-angular',
     script: 'start',
     layouts: ['blank', 'starter'],
@@ -40,9 +43,11 @@ const designSystems = [
   {
     display: 'iX Vue',
     name: 'ix-vue',
+    framework: 'vue',
     dependency: '@siemens/ix-vue',
     script: 'dev',
-    layouts: ['starter'],
+    layouts: ['blank', 'starter'],
+    internalLayouts: ['overview'],
   },
 ];
 const templateChoices = [
@@ -77,7 +82,11 @@ const templateSelections = designSystems.flatMap((designSystem, designSystemInde
 let genRoot: string;
 const genPath = () => path.join(genRoot, projectName);
 
-const run = (args: string[], options?: SyncOptions, cliPath = CLI_PATH) => {
+const run = (
+  args: string[],
+  options?: Pick<SyncOptions, 'cwd' | 'env' | 'input' | 'reject' | 'timeout'>,
+  cliPath = CLI_PATH,
+) => {
   return execaSync(process.execPath, [cliPath, ...args], {
     env: { ...process.env, _TEST_CLI: 'true' },
     ...options,
@@ -183,6 +192,7 @@ const createCliFixture = () => {
 const createScaffoldFixture = (): ScaffoldConfig => ({
   id: 'ix-react',
   name: 'iX React',
+  framework: 'react',
   layouts: templateChoices.map(choice => ({
     id: choice.name,
     name: choice.display,
@@ -303,6 +313,7 @@ test('creates a project through the complete interactive flow', async () => {
       { prompt: 'Project name:', input: `${projectName}\r` },
       { prompt: 'Select design system and framework:', input: '\r' },
       { prompt: 'Select a template:', input: '\r' },
+      { prompt: 'Apply the Siemens theme?', input: 'n\r' },
     ],
   );
 
@@ -331,6 +342,7 @@ test.each(templateSelections)(
       [
         { prompt: 'Select design system and framework:', input: designSystemInput },
         { prompt: 'Select a template:', input: templateInput },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
     );
     const generatedPkg: TemplatePackage = JSON.parse(
@@ -354,6 +366,7 @@ test('recovers from an invalid template with the new prompt flow', async () => {
     [
       { prompt: 'Select design system and framework:', input: '\x1b[B\r' },
       { prompt: 'Select a template:', input: '\r' },
+      { prompt: 'Apply the Siemens theme?', input: 'n\r' },
     ],
   );
 
@@ -368,9 +381,11 @@ describe('catalog initialization', () => {
     'missing template',
     'missing scaffold.json',
     'invalid scaffold.json',
+    'missing framework',
+    'invalid framework',
     'mismatched manifest ID',
     'duplicate layout ID',
-  ])('reports %s consistently for help and scaffolding', failure => {
+  ])('reports %s consistently for help, listing and scaffolding', failure => {
     const { cliPath, templateDir } = createCliFixture();
     createTemplateFixture(templateDir);
     const configPath = path.join(templateDir, 'scaffold.json');
@@ -381,6 +396,14 @@ describe('catalog initialization', () => {
       fs.rmSync(configPath);
     } else if (failure === 'invalid scaffold.json') {
       fs.writeFileSync(configPath, '{ invalid JSON');
+    } else if (failure === 'missing framework' || failure === 'invalid framework') {
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify({
+          ...config,
+          framework: failure === 'missing framework' ? undefined : 'svelte',
+        }),
+      );
     } else {
       if (failure === 'mismatched manifest ID') {
         config.id = 'incorrect';
@@ -394,6 +417,8 @@ describe('catalog initialization', () => {
       'missing template': 'Template "ix-react" is not shipped with this version.',
       'missing scaffold.json': 'has a missing or invalid scaffold.json.',
       'invalid scaffold.json': 'has a missing or invalid scaffold.json.',
+      'missing framework': 'has an invalid scaffold.json.',
+      'invalid framework': 'has an invalid scaffold.json.',
       'mismatched manifest ID': 'must declare ID "ix-react".',
       'duplicate layout ID': 'declares duplicate layout ID "blank".',
     };
@@ -403,6 +428,8 @@ describe('catalog initialization', () => {
     const invocations = [
       ['--help'],
       ['-h'],
+      ['--list-templates'],
+      ['--list-templates', '--json'],
       [destination, '--overwrite', '--template', 'ix-react-starter', '--no-interactive'],
       [destination, '--overwrite', '--template', 'ix-react-starter', '--interactive'],
     ];
@@ -432,6 +459,7 @@ describe('catalog initialization', () => {
             fs.writeFileSync(path.join(templateDir, 'scaffold.json'), '{ invalid JSON');
           },
         },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
       cliPath,
     );
@@ -465,6 +493,7 @@ describe('manifest selection metadata', () => {
       [
         { prompt: 'Select design system and framework:', input: '\x1b[B\r' },
         { prompt: 'Select a template:', input: '\r' },
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
       ],
       cliPath,
     );
@@ -763,7 +792,7 @@ describe('validation before overwrite', () => {
     {
       name: 'installation',
       directory: 'existing',
-      args: ['--template', 'ix-react-starter'],
+      args: ['--template', 'ix-react-starter', '--siemens-theme'],
       prompt: 'Install with',
     },
   ])(
@@ -830,6 +859,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--overwrite', '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -856,6 +886,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -888,6 +919,7 @@ describe('validation before overwrite', () => {
     const result = await runInteractive(
       [destination, '--overwrite', '--template', 'ix-react-starter', '--interactive'],
       [
+        { prompt: 'Apply the Siemens theme?', input: 'n\r' },
         {
           prompt: 'Install with',
           input: 'n\r',
@@ -1100,11 +1132,13 @@ test.each(templateSelections)(
       expect(serve.configurations.production.buildTarget).toBe(`${template}:build:production`);
       expect(serve.configurations.development.buildTarget).toBe(`${template}:build:development`);
       if (name === 'element') {
-        expect(stdout).toContain('requires access to the Siemens GitLab npm registry');
-        expect(fs.readFileSync(path.join(genPath(), '.npmrc'), 'utf-8')).toContain(
-          '@simpl:registry=https://code.siemens.com/api/v4/projects/732/packages/npm/',
-        );
-        expect(build.options.styles).toEqual(['src/styles.scss']);
+        expect(stdout).not.toContain('requires access to the Siemens GitLab npm registry');
+        expect(fs.existsSync(path.join(genPath(), '.npmrc'))).toBe(false);
+        expect(build.options.styles).toEqual([
+          'src/styles.scss',
+          'node_modules/@siemens/element-theme/src/theme.scss',
+        ]);
+        expect(fs.existsSync(path.join(genPath(), 'src/brand.scss'))).toBe(false);
         const styles = fs.readFileSync(path.join(genPath(), 'src/styles.scss'), 'utf-8');
         const assetDirectory =
           layout === 'overview' ? 'src/app/layouts/starter/assets' : 'public/assets';
@@ -1137,6 +1171,47 @@ test.each(templateSelections)(
     }
   },
 );
+
+test('adds the Element brand stylesheet when the Siemens theme is requested', () => {
+  run([projectName, '--template', 'element-starter', '--siemens-theme', '--no-interactive'], {
+    cwd: genRoot,
+  });
+
+  const generated = genPath();
+  const pkg: TemplatePackage = JSON.parse(
+    fs.readFileSync(path.join(generated, 'package.json'), 'utf-8'),
+  );
+  const workspace = JSON.parse(fs.readFileSync(path.join(generated, 'angular.json'), 'utf-8'));
+  const build = workspace.projects['element-starter'].architect.build;
+
+  expect(build.options.styles).toEqual(['src/styles.scss', 'src/brand.scss']);
+  expect(pkg.dependencies).toHaveProperty('@simpl/brand', '4.0.1');
+  expect(fs.existsSync(path.join(generated, 'src/brand.scss'))).toBe(true);
+  expect(fs.readFileSync(path.join(generated, '.npmrc'), 'utf-8')).toContain(
+    '@simpl:registry=https://code.siemens.com/api/v4/projects/732/packages/npm/',
+  );
+});
+
+test('does not prompt for the Siemens theme when explicitly disabled', () => {
+  const { stdout, exitCode } = run(
+    [
+      projectName,
+      '--template',
+      'ix-react-starter',
+      '--interactive',
+      '--no-immediate',
+      '--no-siemens-theme',
+    ],
+    { cwd: genRoot, input: 'n\r' },
+  );
+  const generatedPkg: TemplatePackage = JSON.parse(
+    fs.readFileSync(path.join(genPath(), 'package.json'), 'utf-8'),
+  );
+
+  expect(exitCode).toBe(0);
+  expect(stdout).not.toContain('Apply the Siemens theme?');
+  expect(generatedPkg.dependencies).not.toHaveProperty('@siemens-ix/corporate-theme');
+});
 
 describe('template source isolation', () => {
   test('scaffolding different layouts does not modify the source template', () => {
@@ -1191,6 +1266,234 @@ describe('template source isolation', () => {
   });
 });
 
+describe('template listing', () => {
+  const choices = [
+    ...templateChoices,
+    {
+      display: 'Overview',
+      name: 'overview',
+      description: 'A browsable gallery of all available layouts and examples',
+    },
+  ];
+  const expectedTemplates = designSystems.flatMap(designSystem =>
+    choices.map(choice => ({
+      template: `${designSystem.name}-${choice.name}`,
+      name: choice.display,
+      designSystemId: designSystem.name,
+      description: choice.description,
+      framework: designSystem.framework,
+    })),
+  );
+  const getTableRows = (stdout: string) => stdout.split('\n').map(row => row.split(/ {2,}/));
+  const toTableRows = (templates: typeof expectedTemplates) =>
+    templates.map(template => [
+      template.template,
+      template.name,
+      template.framework,
+      template.description,
+    ]);
+
+  test.each([false, true])('lists templates in catalog order (JSON=%s)', json => {
+    fs.mkdirSync(genPath());
+    const { stdout, stderr, exitCode } = run(['--list-templates', ...(json ? ['--json'] : [])], {
+      cwd: genPath(),
+      env: { ...process.env, FORCE_COLOR: '1' },
+      timeout: 5000,
+    });
+    const output: unknown = json ? JSON.parse(stdout) : getTableRows(stdout);
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toBe('');
+    expect(output).toEqual(
+      json
+        ? expectedTemplates
+        : [['Template', 'Name', 'Framework', 'Description'], ...toTableRows(expectedTemplates)],
+    );
+    expect(stdout).not.toContain('\u001b[');
+    expect(fs.readdirSync(genPath())).toEqual([]);
+  });
+
+  test.each(['init', 'create'])(
+    'redirects npm %s --silent output to a valid JSON file',
+    command => {
+      const bin = path.join(genPath(), 'node_modules', '.bin', 'create-siemens-web');
+      const cli = path.join(CLI_PATH, 'index.js');
+      const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
+      fs.mkdirSync(path.dirname(bin), { recursive: true });
+      fs.symlinkSync(
+        CLI_PATH,
+        path.join(genPath(), 'node_modules', 'create-siemens-web'),
+        directoryLinkType,
+      );
+      fs.writeFileSync(bin, `#!/bin/sh\nexec ${quote(process.execPath)} ${quote(cli)} "$@"\n`, {
+        mode: 0o755,
+      });
+      if (process.platform === 'win32') {
+        fs.writeFileSync(
+          `${bin}.cmd`,
+          `@echo off\r\n"${process.execPath}" "${cli}" %*\r\nexit /b %errorlevel%\r\n`,
+        );
+      }
+      fs.writeFileSync(
+        path.join(genPath(), 'package.json'),
+        JSON.stringify({
+          name: projectName,
+          version: '1.0.0',
+          private: true,
+          devDependencies: { 'create-siemens-web': '*' },
+        }),
+      );
+      const output = path.join(genPath(), 'templates.json');
+      const { stderr, exitCode } = execaSync(
+        'npm',
+        [
+          '--offline',
+          '--yes',
+          '--silent',
+          command,
+          'siemens-web',
+          '--',
+          '--list-templates',
+          '--json',
+        ],
+        {
+          cwd: genPath(),
+          env: {
+            _TEST_CLI: 'true',
+            npm_config_cache: path.join(genPath(), '.npm-cache'),
+            npm_config_update_notifier: 'false',
+          },
+          stdout: { file: output },
+          timeout: 15000,
+        },
+      );
+      const templates: unknown = JSON.parse(fs.readFileSync(output, 'utf-8'));
+
+      expect(exitCode).toBe(0);
+      expect(stderr).toBe('');
+      expect(templates).toEqual(expectedTemplates);
+    },
+  );
+
+  test.each([
+    { json: false, flags: ['--interactive'] },
+    { json: true, flags: ['--interactive', '--overwrite', '--immediate', '--siemens-theme'] },
+  ])(
+    'bypasses scaffolding without prompts or filesystem changes (JSON=$json)',
+    ({ json, flags }) => {
+      createNonEmptyDir(genPath());
+      const existingContents = snapshotDir(genPath());
+      const { stdout, stderr, exitCode } = run(
+        [
+          '--list-templates',
+          ...(json ? ['--json'] : []),
+          projectName,
+          '--template',
+          'unknown',
+          ...flags,
+        ],
+        { cwd: genRoot, timeout: 5000 },
+      );
+
+      expect(exitCode).toBe(0);
+      expect(stderr).toBe('');
+      expect(stdout).not.toMatch(
+        /Project name:|Select design system|Select a template:|Scaffolding|Installing|Starting|Siemens theme/,
+      );
+      expect(snapshotDir(genPath())).toEqual(existingContents);
+    },
+  );
+
+  test.each([false, true])(
+    'rejects --json without active --list-templates (negated=%s)',
+    negated => {
+      createNonEmptyDir(genPath());
+      const existingContents = snapshotDir(genPath());
+      const { stdout, stderr, exitCode } = run(
+        [
+          projectName,
+          '--json',
+          ...(negated ? ['--no-list-templates'] : []),
+          '--overwrite',
+          '--immediate',
+          '--interactive',
+        ],
+        { cwd: genRoot, reject: false, timeout: 5000 },
+      );
+
+      expect(exitCode).toBe(1);
+      expect(stdout).toBe('');
+      expect(stderr).toContain('--json can only be used with --list-templates.');
+      expect(snapshotDir(genPath())).toEqual(existingContents);
+    },
+  );
+
+  test('uses manifest metadata without requiring scaffold source files', () => {
+    const { cliPath, templateDir } = createCliFixture();
+    const config = createScaffoldFixture();
+    config.layouts = [
+      {
+        id: 'custom',
+        name: 'Custom template from the manifest',
+        description: 'A manifest-only template with its own description',
+        scaffold: { dependencies: [] },
+      },
+      config.layouts[1],
+      config.layouts[0],
+    ];
+    fs.mkdirSync(templateDir);
+    fs.writeFileSync(path.join(templateDir, 'scaffold.json'), JSON.stringify(config));
+
+    const json = run(['--list-templates', '--json'], { cwd: genRoot }, cliPath);
+    const templates: typeof expectedTemplates = JSON.parse(json.stdout);
+    const expected = config.layouts.map(layout => ({
+      template: `ix-react-${layout.id}`,
+      name: layout.name,
+      designSystemId: 'ix-react',
+      description: layout.description,
+      framework: 'react',
+    }));
+    expect(templates.filter(template => template.designSystemId === 'ix-react')).toEqual(expected);
+
+    const table = run(['--list-templates'], { cwd: genRoot }, cliPath);
+    expect(
+      getTableRows(table.stdout).filter(([template]) => template.startsWith('ix-react-')),
+    ).toEqual(toTableRows(expected));
+  });
+
+  test('accepts every listed template as --template input', () => {
+    const listing = run(['--list-templates', '--json'], { cwd: genRoot });
+    const templates: typeof expectedTemplates = JSON.parse(listing.stdout);
+
+    for (const { template } of templates) {
+      const destination = path.join(genPath(), template);
+      const { exitCode } = run([destination, '--template', template, '--no-interactive'], {
+        cwd: genRoot,
+      });
+      const pkg: TemplatePackage = JSON.parse(
+        fs.readFileSync(path.join(destination, 'package.json'), 'utf-8'),
+      );
+
+      expect(exitCode).toBe(0);
+      expect(pkg.name).toBe(template);
+    }
+  });
+
+  test.each(['list', 'templates'])('allows %s as a project-folder name', directory => {
+    fs.mkdirSync(genPath());
+    const { exitCode } = run([directory, '--template', 'ix-react-blank', '--no-interactive'], {
+      cwd: genPath(),
+    });
+    const pkg: TemplatePackage = JSON.parse(
+      fs.readFileSync(path.join(genPath(), directory, 'package.json'), 'utf-8'),
+    );
+
+    expect(exitCode).toBe(0);
+    expect(pkg.name).toBe(directory);
+    expect(pkg.dependencies).toHaveProperty('@siemens/ix-react');
+  });
+});
+
 test.each(['--help', '-h'])('%s explains usage and lists available templates', flag => {
   const { stdout } = run([flag], {
     cwd: genRoot,
@@ -1203,7 +1506,10 @@ test.each(['--help', '-h'])('%s explains usage and lists available templates', f
   expect(stdout).toContain('-h, --help');
   expect(stdout).toContain('UNC paths are not supported.');
   expect(stdout).toContain('DIRECTORY itself cannot be a symbolic link or junction.');
-  expect(stdout).toContain('Element Angular (requires Siemens GitLab npm access)');
+  expect(stdout).toContain('--siemens-theme');
+  expect(stdout).toContain('--list-templates');
+  expect(stdout).toContain('--json');
+  expect(stdout).toContain('create-siemens-web --list-templates [--json]');
   for (const { display } of designSystems) {
     expect(stdout).toContain(display);
   }
@@ -1269,7 +1575,10 @@ describe('installation and startup', () => {
       const destination = path.join(genPath(), 'generated');
       const result = await runInteractive(
         [destination, '--template', 'ix-react-starter', '--interactive'],
-        [{ prompt: 'Install with npm and start now?', input: accepted ? 'y\r' : 'n\r' }],
+        [
+          { prompt: 'Apply the Siemens theme?', input: 'n\r' },
+          { prompt: 'Install with npm and start now?', input: accepted ? 'y\r' : 'n\r' },
+        ],
         cliPath,
         fixture.env,
       );
@@ -1293,7 +1602,14 @@ describe('installation and startup', () => {
     const fixture = createPackageManagerFixture('npm');
     const destination = path.join(genPath(), 'generated');
     const result = run(
-      [destination, '--template', 'ix-react-starter', '--interactive', '--no-immediate'],
+      [
+        destination,
+        '--template',
+        'ix-react-starter',
+        '--siemens-theme',
+        '--interactive',
+        '--no-immediate',
+      ],
       { cwd: genRoot, env: fixture.env },
       cliPath,
     );

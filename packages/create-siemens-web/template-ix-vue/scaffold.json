@@ -1,7 +1,14 @@
 {
   "id": "ix-vue",
   "name": "iX Vue",
+  "framework": "vue",
   "layouts": [
+    {
+      "id": "blank",
+      "name": "Blank",
+      "description": "A bare-bone project setup without any pages or examples",
+      "scaffold": { "dependencies": [] }
+    },
     {
       "id": "starter",
       "name": "Starter",
@@ -14,6 +21,15 @@
           "ag-grid-vue3",
           "echarts"
         ]
+      }
+    },
+    {
+      "id": "overview",
+      "name": "Overview",
+      "description": "A browsable gallery of all available layouts and examples",
+      "scaffold": {
+        "includeLayouts": ["blank", "starter"],
+        "preserveHierarchy": true
       }
     }
   ],

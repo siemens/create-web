@@ -10,6 +10,7 @@ import spawn from 'cross-spawn';
 import mri from 'mri';
 import * as prompts from '@clack/prompts';
 import {
+  getSiemensTheme,
   getTemplateId,
   prepareTemplateFiles,
   readScaffoldConfig,
@@ -54,22 +55,54 @@ const validateDesignSystems = (designSystems: ScaffoldConfig[]) => {
   }
 };
 
-const designSystemLabel = (designSystem: ScaffoldConfig) => {
-  const suffix = designSystem.requiresSiemensRegistry
-    ? ' (requires Siemens GitLab npm access)'
-    : '';
-  return designSystem.name + suffix;
-};
-
 const getListOfAllTemplates = (designSystems: ScaffoldConfig[]) => {
   return designSystems
     .map(designSystem => {
       const templates = designSystem.layouts
         .map(layout => `  - ${getTemplateId(designSystem.id, layout.id)}`)
         .join('\n');
-      return `${designSystemLabel(designSystem)}\n${templates}`;
+      return `${designSystem.name}\n${templates}`;
     })
     .join('\n\n');
+};
+
+const printTemplates = (designSystems: ScaffoldConfig[], json: boolean) => {
+  const templates = designSystems.flatMap(designSystem =>
+    designSystem.layouts.map(layout => ({
+      template: getTemplateId(designSystem.id, layout.id),
+      name: layout.name,
+      designSystemId: designSystem.id,
+      description: layout.description,
+      framework: designSystem.framework,
+    })),
+  );
+
+  if (json) {
+    console.log(JSON.stringify(templates, undefined, 2));
+    return;
+  }
+
+  const rows = [
+    ['Template', 'Name', 'Framework', 'Description'],
+    ...templates.map(template => [
+      template.template,
+      template.name,
+      template.framework,
+      template.description,
+    ]),
+  ];
+  const widths = rows[0].map((_, column) => Math.max(...rows.map(row => row[column].length)));
+  console.log(
+    rows
+      .map(row =>
+        row
+          .map((value, column) =>
+            column === row.length - 1 ? value : value.padEnd(widths[column]),
+          )
+          .join('  '),
+      )
+      .join('\n'),
+  );
 };
 
 const SUPPORTED_PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun', 'deno'];
@@ -86,8 +119,19 @@ const argv = mri<{
   overwrite?: boolean;
   immediate?: boolean;
   interactive?: boolean;
+  'list-templates'?: boolean;
+  json?: boolean;
+  'siemens-theme'?: boolean;
 }>(process.argv.slice(2), {
-  boolean: ['help', 'overwrite', 'immediate', 'interactive'],
+  boolean: [
+    'help',
+    'overwrite',
+    'immediate',
+    'interactive',
+    'list-templates',
+    'json',
+    'siemens-theme',
+  ],
   alias: { h: 'help', t: 'template', i: 'immediate' },
   string: ['template'],
 });
@@ -97,6 +141,7 @@ const getHelpMessage = (designSystems: ScaffoldConfig[]) => {
   // prettier-ignore
   return `\
 Usage: create-siemens-web [OPTION]... [DIRECTORY]
+       create-siemens-web --list-templates [--json]
 
 Create a new Siemens web application in JavaScript or TypeScript.
 When running in TTY, the CLI will start in interactive mode.
@@ -104,10 +149,13 @@ DIRECTORY may be a relative or an absolute local path. UNC paths are not support
 DIRECTORY itself cannot be a symbolic link or junction.
 
 Options:
+  --list-templates                     list all templates without creating a project
+  --json                               output --list-templates as JSON
   -t, --template NAME                   use a specific template
   -i, --immediate / --no-immediate      install dependencies and start dev
   --overwrite                           remove existing files when target directory is not empty
   --interactive / --no-interactive      force interactive / non-interactive mode
+  --siemens-theme                       apply the Siemens theme (default: no)
   -h, --help                            display this help message
 
 Available templates:
@@ -184,10 +232,20 @@ async function init() {
   const argOverwrite = argv.overwrite;
   const argImmediate = argv.immediate;
   const argInteractive = argv.interactive;
+  const argSiemensTheme = argv['siemens-theme'];
 
   if (argv.help) {
     console.log(getHelpMessage(designSystems));
     return;
+  }
+
+  if (argv['list-templates']) {
+    printTemplates(designSystems, argv.json ?? false);
+    return;
+  }
+
+  if (argv.json) {
+    throw new Error('--json can only be used with --list-templates.');
   }
 
   const interactive = argInteractive ?? process.stdin.isTTY;
@@ -260,7 +318,7 @@ async function init() {
       const designSystem = await prompts.select({
         message: 'Select design system and framework:',
         options: designSystems.map(designSystem => ({
-          label: designSystemLabel(designSystem),
+          label: designSystem.name,
           value: designSystem,
         })),
       });
@@ -312,12 +370,6 @@ async function init() {
 
   const runScript = getRunScript(templatePkg);
 
-  if (selectedDesignSystem.requiresSiemensRegistry) {
-    prompts.log.warn(
-      'This template requires access to the Siemens GitLab npm registry to install "@simpl/brand". Configure your registry credentials before installing, otherwise dependency installation will fail.',
-    );
-  }
-
   // 6. Get package name
   let packageName = path.basename(root);
   if (!isValidPackageName(packageName)) {
@@ -339,7 +391,26 @@ async function init() {
     }
   }
 
-  // 7. Ask about immediate install
+  // 7. Choose whether to apply the Siemens theme
+  let siemensTheme = argSiemensTheme ?? false;
+  if (interactive && argSiemensTheme === undefined) {
+    const themeResult = await prompts.confirm({
+      message: 'Apply the Siemens theme?',
+      initialValue: false,
+    });
+    if (prompts.isCancel(themeResult)) {
+      return cancel();
+    }
+    siemensTheme = themeResult;
+  }
+  const theme = getSiemensTheme(selectedDesignSystem.id);
+  if (siemensTheme && theme) {
+    prompts.log.warn(
+      `The Siemens theme requires access to the Siemens GitLab npm registry to install "${theme.dependency}". Configure your registry credentials before installing, otherwise dependency installation will fail.`,
+    );
+  }
+
+  // 8. Ask about immediate install
   let immediate = argImmediate;
   if (immediate === undefined) {
     if (interactive) {
@@ -359,6 +430,7 @@ async function init() {
     packageName,
     templatePackage: templatePkg,
     config: selectedDesignSystem,
+    siemensTheme,
   });
 
   // Check again, since the target directory may have changed while prompts were open
@@ -367,7 +439,7 @@ async function init() {
     return fail(latestTargetDirError);
   }
 
-  // 8. Commit: delete first only after everything was validated
+  // 9. Commit: delete first only after everything was validated
   prompts.log.step(`Scaffolding project in ${root}...`);
   if (argOverwrite) {
     emptyDir(root);
