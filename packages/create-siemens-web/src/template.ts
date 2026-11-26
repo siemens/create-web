@@ -72,7 +72,7 @@ const siemensThemes: Record<string, SiemensTheme | undefined> = {
   },
   ix: {
     dependency: '@siemens-ix/corporate-theme',
-    version: '2.0.0',
+    version: '3.0.0',
     registry: 'https://code.siemens.com/api/v4/packages/npm/',
     files: [],
     stylesheet: '@siemens-ix/corporate-theme/dist/css/brand-theme.css',
@@ -659,15 +659,21 @@ export const prepareTemplateFiles = ({
     ) {
       content = content.toString().replace(/^import /m, `import '${theme.dependency}';\nimport `);
       if (!settings.angular) {
-        const coreImport = "import '@siemens/ix/dist/siemens-ix/siemens-ix.css';";
-        content = content.replace(coreImport, `${coreImport}\nimport '${theme.stylesheet}';`);
+        const legacyStylesImport = "import '@siemens/ix/css/legacy.css';";
+        content = content.replace(
+          legacyStylesImport,
+          `${legacyStylesImport}\nimport '${theme.stylesheet}';`,
+        );
       }
     }
     if (path.basename(relativePath) === 'index.html') {
       content = content.toString().replace(/<title>.*?<\/title>/, `<title>${packageName}</title>`);
       if (theme?.stylesheet) {
         content = content
-          .replace(/data-ix-theme="[^"]*"/, `data-ix-theme="${siemensTheme ? 'brand' : 'classic'}"`)
+          .replace(
+            /data-ix-theme="[^"]*"/,
+            `data-ix-theme="${siemensTheme ? 'brand' : 'community'}"`,
+          )
           .replace(
             /data-ix-color-schema="[^"]*"/,
             `data-ix-color-schema="${siemensTheme ? 'system' : 'dark'}"`,

@@ -20,7 +20,6 @@ const route = useRoute();
 </script>
 
 <template>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
   <IxApplication>
     <IxApplicationHeader name="Siemens Industrial Experience App">
       <CompanyLogo />
@@ -37,11 +36,7 @@ const route = useRoute();
       </IxMenuItem>
     </IxMenu>
     <IxContent>
-      <div id="main-content">
-        <router-view />
-      </div>
+      <router-view />
     </IxContent>
   </IxApplication>
 </template>
-
-<style scoped src="./blank-layout.css"></style>

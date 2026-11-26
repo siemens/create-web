@@ -4,7 +4,8 @@
  */
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
-import '@siemens/ix/dist/siemens-ix/siemens-ix.css';
+import '@siemens/ix/css/default.css';
+import '@siemens/ix/css/legacy.css';
 import './styles/global.css';
 import App from './App.vue';
 import { routes } from './app/app.routes';

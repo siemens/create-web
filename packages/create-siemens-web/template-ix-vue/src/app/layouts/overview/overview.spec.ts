@@ -6,13 +6,14 @@ import { afterEach, beforeEach, expect, test } from 'vitest';
 import { page } from 'vitest/browser';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { render } from 'vitest-browser-vue';
-import '@siemens/ix/dist/siemens-ix/siemens-ix.css';
+import '@siemens/ix/css/default.css';
+import '@siemens/ix/css/legacy.css';
 import '../../../styles/global.css';
 import App from '../../../App.vue';
 import { routes } from '../../app.routes';
 
 beforeEach(async () => {
-  document.documentElement.setAttribute('data-ix-theme', 'classic');
+  document.documentElement.setAttribute('data-ix-theme', 'community');
   document.documentElement.setAttribute('data-ix-color-schema', 'dark');
   const router = createRouter({ history: createMemoryHistory(), routes });
   await router.push('/');
@@ -47,7 +48,7 @@ test('renders a header-only overview without a navigation gutter', async () => {
 test('previews Blank without an Overview menu entry', async () => {
   await expect.element(page.getByRole('heading', { name: 'Template overview' })).toBeVisible();
   await page.getByRole('link', { name: 'Blank', exact: true }).click();
-  await expect.poll(() => document.getElementById('main-content')?.textContent?.trim()).toBe('');
+  await expect.poll(() => document.querySelector('ix-content')?.textContent?.trim()).toBe('');
   await expect.element(page.getByRole('main')).toBeInTheDocument();
   expect(document.querySelector('ix-menu')).toBeInTheDocument();
   await expect.element(page.getByLabelText('Overview', { exact: true })).not.toBeInTheDocument();

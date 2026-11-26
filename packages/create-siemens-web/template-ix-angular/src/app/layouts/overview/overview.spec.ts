@@ -10,7 +10,7 @@ import { App } from '../../app';
 import { routes } from '../../app.routes';
 
 beforeEach(async () => {
-  document.documentElement.setAttribute('data-ix-theme', 'classic');
+  document.documentElement.setAttribute('data-ix-theme', 'community');
   document.documentElement.setAttribute('data-ix-color-schema', 'dark');
   await TestBed.configureTestingModule({
     imports: [App],
@@ -52,7 +52,7 @@ test('renders a header-only overview without a navigation gutter', async () => {
 
 test('previews Blank without an Overview menu entry', async () => {
   await page.getByRole('link', { name: 'Blank', exact: true }).click();
-  await expect.element(page.getByRole('main')).toHaveTextContent(/^$/);
+  expect(page.getByRole('main').element().textContent).toBe('');
   await expect.element(page.getByRole('main')).toBeInTheDocument();
   expect(TestBed.inject(Router).url).toBe('/blank');
   expect(document.querySelector('ix-menu')).toBeInTheDocument();
