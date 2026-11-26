@@ -10,7 +10,7 @@ import { App } from '../../app';
 import { routes } from './routes';
 
 beforeEach(async () => {
-  document.documentElement.setAttribute('data-ix-theme', 'classic');
+  document.documentElement.setAttribute('data-ix-theme', 'community');
   document.documentElement.setAttribute('data-ix-color-schema', 'dark');
   await TestBed.configureTestingModule({
     imports: [App],
@@ -29,5 +29,5 @@ test.each(['/', '/missing'])('renders the shell with an empty main page at %s', 
 
   await expect.element(page.getByText('Home', { exact: true })).toBeInTheDocument();
   await expect.element(page.getByRole('main')).toBeInTheDocument();
-  await expect.element(page.getByRole('main')).toHaveTextContent(/^$/);
+  expect(page.getByRole('main').element().textContent).toBe('');
 });

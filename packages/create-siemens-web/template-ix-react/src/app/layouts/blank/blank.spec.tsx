@@ -11,5 +11,5 @@ test.each(['/', '/missing'])('renders the shell with an empty main page at %s', 
 
   await expect.element(getByText('Home', { exact: true })).toBeInTheDocument();
   await expect.element(getByRole('main')).toBeInTheDocument();
-  await expect.element(document.getElementById('main-content')).toHaveTextContent(/^$/);
+  expect(document.querySelector('ix-content')?.textContent).toBe('');
 });

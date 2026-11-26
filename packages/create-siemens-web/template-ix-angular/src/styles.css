@@ -2,6 +2,9 @@
  * Copyright (c) Siemens 2026
  * SPDX-License-Identifier: MIT
  */
+@import '@siemens/ix/css/default.css';
+@import '@siemens/ix/css/legacy.css';
+
 html,
 body {
   block-size: 100%;

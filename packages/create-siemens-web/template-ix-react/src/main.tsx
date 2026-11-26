@@ -5,7 +5,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
-import '@siemens/ix/dist/siemens-ix/siemens-ix.css';
+import '@siemens/ix/css/default.css';
+import '@siemens/ix/css/legacy.css';
 import './styles.css';
 import App from './App';
 

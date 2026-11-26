@@ -30,7 +30,7 @@ test.each([
     [{ element: <RouteLocation />, children: routes }],
     '/missing/nested',
   );
-  await expect.element(screen.getByLabelText('Current route')).toHaveTextContent(/^\/$/);
+  expect(screen.getByLabelText('Current route').element().textContent).toBe('/');
 });
 
 test.each([
@@ -40,9 +40,7 @@ test.each([
   { path: '/starter/missing/nested', expectedPath: '/starter' },
 ])('redirects $path to its layout at $expectedPath', async ({ path, expectedPath }) => {
   const screen = await renderRoutes([{ element: <RouteLocation />, children: routes }], path);
-  await expect
-    .element(screen.getByLabelText('Current route'))
-    .toHaveTextContent(new RegExp(`^${expectedPath}$`));
+  expect(screen.getByLabelText('Current route').element().textContent).toBe(expectedPath);
 });
 
 test('renders a header-only overview without a navigation gutter', async () => {
@@ -59,10 +57,10 @@ test('renders a header-only overview without a navigation gutter', async () => {
     expect(document.querySelector('ix-application')).not.toBeInTheDocument();
     expect(document.querySelector('ix-menu')).not.toBeInTheDocument();
     await expect
-      .poll(() => document.getElementById('main-content')!.getBoundingClientRect().left)
+      .poll(() => document.querySelector('ix-content')!.getBoundingClientRect().left)
       .toBeCloseTo(header.parentElement!.getBoundingClientRect().left, 0);
     await expect
-      .poll(() => document.getElementById('main-content')!.getBoundingClientRect().width)
+      .poll(() => document.querySelector('ix-content')!.getBoundingClientRect().width)
       .toBeCloseTo(header.parentElement!.getBoundingClientRect().width, 0);
   }
 });
@@ -71,7 +69,7 @@ test('previews Blank without an Overview menu entry', async () => {
   const screen = await renderRoutes(routes);
   await expect.element(screen.getByRole('heading', { name: 'Template overview' })).toBeVisible();
   await screen.getByRole('link', { name: 'Blank', exact: true }).click();
-  await expect.poll(() => document.getElementById('main-content')?.textContent?.trim()).toBe('');
+  await expect.poll(() => document.querySelector('ix-content')?.textContent?.trim()).toBe('');
   await expect.element(screen.getByRole('main')).toBeInTheDocument();
   expect(document.querySelector('ix-menu')).toBeInTheDocument();
   await expect.element(screen.getByLabelText('Overview', { exact: true })).not.toBeInTheDocument();
