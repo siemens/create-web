@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/siemens/create-web/compare/v0.1.1...v0.2.0) (2026-11-26)
+
+
+### Features
+
+* **ix-angular|ix-react|ix-vue:** upgrade all templates to iX v6 ([e92113b](https://github.com/siemens/create-web/commit/e92113bc6c05598978a2f310b119ad67a6ef8adc))
+
 ## [0.1.1](https://github.com/siemens/create-web/compare/v0.1.0...v0.1.1) (2026-11-20)
 
 
