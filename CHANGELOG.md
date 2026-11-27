@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/siemens/create-web/compare/v0.2.0...v0.3.0) (2026-11-27)
+
+
+### Features
+
+* **ix-angular|ix-react|ix-vue:** use Siemens favicon in iX templates ([5e26689](https://github.com/siemens/create-web/commit/5e26689a59eaf2d897888748e23942826c3fece9))
+
 ## [0.2.0](https://github.com/siemens/create-web/compare/v0.1.1...v0.2.0) (2026-11-26)
 
 
